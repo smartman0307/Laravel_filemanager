@@ -5,9 +5,9 @@
 
             @foreach($directories as $key => $dir)
                 <div class="col-sm-6 col-md-2">
-                    <div class="thumbnail text-center" data-id="{{ basename($dir) }}">
-                        <a id="folder_{{ $key }}" data-id="{{ $dir }}"
-                           onclick="clickFolder('folder_{{ $key }}',0)"
+                    <div class="thumbnail text-center";" data-id="{{ basename($dir) }}">
+                        <a id="large_folder_{{ $key }}" data-id="{{ $dir }}"
+                           onclick="clickFolder('large_folder_{{ $key }}',1)"
                            class="folder-icon pointer">
                             {{--<i class="fa fa-folder-o fa-5x"></i>--}}
                             <img src="/vendor/laravel-filemanager/img/folder.jpg">
@@ -15,7 +15,7 @@
                     </div>
                     <div class="caption text-center">
                         <div class="btn-group">
-                            <button type="button" onclick="clickFolder('folder_{{ $key }}',0)"
+                            <button type="button" onclick="clickFolder('large_folder_{{ $key }}',1)"
                                     class="btn btn-default btn-xs">
                                 {!! str_limit(basename($dir), $limit = 10, $end = '...') !!}
                             </button>
@@ -41,7 +41,7 @@
                     <div class="thumbnail thumbnail-img" data-id="{{ basename($file) }}" id="img_thumbnail_{{ $key }}">
                         <img id="{!! $file !!}"
                              src="{{ $dir_location }}{{ $base }}/thumbs/{{ basename($file) }}?r={{ str_random(40) }}"
-                             alt="" style="cursor:pointer;" onclick="useFile('{!! basename($file) !!}')">
+                             alt="">
                     </div>
 
                     <div class="caption text-center">
