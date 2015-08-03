@@ -10,37 +10,37 @@
                 <tbody>
                 @if ($scaled)
                     <tr>
-                        <td>{!! Lang::get('laravel-filemanager::lfm.resize-ratio') !!}</td>
+                        <td>Ratio:</td>
                         <td>{!! number_format($ratio, 2) !!}</td>
                     </tr>
                     <tr>
-                        <td>{!! Lang::get('laravel-filemanager::lfm.resize-scaled') !!}</td>
+                        <td>Image scaled:</td>
                         <td>
-                            {!! Lang::get('laravel-filemanager::lfm.resize-true') !!}
+                            Yes
                         </td>
                     </tr>
                 @endif
                 <tr>
-                    <td>{!! Lang::get('laravel-filemanager::lfm.resize-old-height') !!}</td>
+                    <td>Original Height:</td>
                     <td>{!! $original_height !!}px</td>
                 </tr>
                 <tr>
-                    <td>{!! Lang::get('laravel-filemanager::lfm.resize-old-width') !!}</td>
+                    <td>Original Width:</td>
                     <td>{!! $original_width !!}px</td>
                 </tr>
                 <tr>
-                    <td>{!! Lang::get('laravel-filemanager::lfm.resize-new-height') !!}</td>
+                    <td>Height:</td>
                     <td><span id="height_display"></span></td>
                 </tr>
                 <tr>
-                    <td>{!! Lang::get('laravel-filemanager::lfm.resize-new-width') !!}</td>
+                    <td>Width:</td>
                     <td><span id="width_display"></span></td>
                 </tr>
                 </tbody>
             </table>
 
-            <button class="btn btn-primary" onclick="doResize()">{!! Lang::get('laravel-filemanager::lfm.btn-resize') !!}</button>
-            <button class="btn btn-info" onclick="loadImages()">{!! Lang::get('laravel-filemanager::lfm.btn-cancel') !!}</button>
+            <button class="btn btn-primary" onclick="doResize()">Resize</button>
+            <button class="btn btn-info" onclick="loadImages()">Cancel</button>
 
             <input type="hidden" name="ratio" value="{!! $ratio !!}"><br>
             <input type="hidden" name="scaled" value="{!! $scaled !!}"><br>
