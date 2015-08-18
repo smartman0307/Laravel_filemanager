@@ -1,95 +1,126 @@
 # laravel-filemanager
 
-## Overview
+### This package is functional, but is under active development.
 
-Fork from [tsawler/laravel-filemanager](http://packalyst.com/packages/package/tsawler/laravel-filemanager), add mechanism to restrict users to see only their own folders.
-The original functions support image and file upload, this package only modifies the image functions.
+A file upload/editor intended for use with [Laravel 5](http://www.laravel.com/ "Title") and [CKEditor](http://ckeditor.com/).
+
+## Rationale
+
+There are other packages out there that offer much the same functionality, such as [KCFinder](http://kcfinder.sunhater.com/),
+but I found that integration with Laravel was a bit problematic, particularly when it comes to handling sessions
+and security.
+
+This package is written specifically for Laravel 5, and will integrate seamlessly.
 
 ## Requirements
 
-This package requires `"intervention/image": "2.*"`, in order to make thumbs, crop and resize images.
+1. This package only supports Laravel 5.x
+1. Requires `"intervention/image": "2.*"`
+1. Requires PHP 5.5 or later
 
 ## Installation
 
-1. Run `composer require intervention/image`
+1. Installation is done through composer and packagist. From within your project root directory, execute the 
+following command:
 
-1. Run `composer require unisharp/laravel-filemanager`
+    `composer require tsawler/laravel-filemanager`
 
-1. Edit `config/app.php` :
+1. Next run composer update to install the package from packagist:
 
-    Add this in service providers
+    `composer update`
 
-    ```php
-        Unisharp\Laravelfilemanager\LaravelFilemanagerServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,
-    ```
+1. Add the ServiceProvider to the providers array in config/app.php:
 
-    And add this in class aliases
+    `'Tsawler\Laravelfilemanager\LaravelFilemanagerServiceProvider',`
 
-    ```php
-        'Image' => Intervention\Image\Facades\Image::class,
-    ```
+1. Publish the package's config file:
 
-1. Publish the package's config and assets :
+    `php artisan vendor:publish --tag=lfm_config`
 
-    ```
-        php artisan vendor:publish --tag=lfm_config
-        php artisan vendor:publish --tag=lfm_public
-    ```
+1. Publish the package's public folder assets:
 
-1. View initiation
-
-    ```javascript
-        <script>
-            CKEDITOR.replace( 'editor', {
-                filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images'
-            });
-        </script>
-    ```
-
-    Or initiate using ckeditor jquery adapter
-
-    ```javascript
-        <script>
-            $('textarea').ckeditor({
-              filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images'
-            });
-        </script>
-    ```
-
-1. Ensure that the files & images directories are writable by your web server
-
-## Customization
+    `php artisan vendor:publish --tag=lfm_public`
     
-1. To use your own route, edit config/lfm.php :
+1. If you want to customize the look & feel, then publish the package's views:
+
+    `php artisan vendor:publish --tag=lfm_views`
+    
+1. By default, the package will use its own routes. If you don't want to use those routes, change this entry in config/lfm.php to false:
 
     ```php
-        'use_package_routes' => false,
-    ```
-
-1. To disable multi-user mechanism, dit config/lfm.php :
-
-    ```php
-        'allow_multi_user' => false,
+        'use_package_routes' => true,
     ```
     
-1. To specify upload directory, edit config/lfm.php :
+    You will, of course, have to set up your own routes.
+    
+1. If you don't want to use the default image/file directory or url, update the appropriate lines in config/lfm.php:
 
     ```php
         'images_dir'         => 'public/vendor/laravel-filemanager/images/',
         'images_url'         => '/vendor/laravel-filemanager/images/',
+        'files_dir'          => 'public/vendor/laravel-filemanager/files/',
+        'files_url'          => '/vendor/laravel-filemanager/files/',
     ```
+    
+1. Ensure that the files & images directories are writable by your web serber
 
-1. If the route is changed, make sure `filebrowserImageBrowseUrl` is correspond to your route :
+1. In the view where you are using a CKEditor instance, use the file uploader by initializing the
+CKEditor instance as follows:
 
     ```javascript
         <script>
             CKEDITOR.replace( 'editor', {
-                filebrowserImageBrowseUrl: '/your-custom-route?type=Images'
+                filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                filebrowserBrowseUrl: '/laravel-filemanager?type=Files'
             });
         </script>
     ```
     
-    And be sure to include the `?type=Images` parameter.
+    Here, "editor" is the id of the textarea you are transforming to a CKEditor instance. Note that if
+    you are using a custom route you will have to change `/laravel-filemanager?type=Images` to correspond
+    to whatever route you have chosen. Be sure to include the `?type=Images` parameter.
     
-1. To customize the views, run `php artisan vendor:publish --tag=lfm_views`
+    
+## Security
+
+It is important to note that if you use your own routes __you must protect your routes to Laravel-Filemanager in order to prevent
+unauthorized uploads to your server__. Fortunately, Laravel makes this very easy.
+
+If, for example, you want to ensure that only logged in users have the ability to access the Laravel-Filemanager, 
+simply wrap the routes in a group, perhaps like this:
+
+    Route::group(array('before' => 'auth'), function ()
+    {
+        Route::get('/laravel-filemanager', 'Tsawler\Laravelfilemanager\controllers\LfmController@show');
+        Route::post('/laravel-filemanager/upload', 'Tsawler\Laravelfilemanager\controllers\LfmController@upload');
+        // list all lfm routes here...
+    });
+    
+This approach ensures that only authenticated users have access to the Laravel-Filemanager. If you are
+using Middleware or some other approach to enforce security, modify as needed.
+    
+## License
+
+This package is released under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Trevor Sawler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
