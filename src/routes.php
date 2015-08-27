@@ -1,5 +1,6 @@
 <?php
-Route::group(array('middleware' => 'auth'), function () // make sure authenticated
+// make sure authenticated
+Route::group(array('middleware' => \Config::get('lfm.middlewares')), function ()
 {
 
     Route::get('sample-ckeditor-integration', function () {
