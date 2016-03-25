@@ -103,10 +103,12 @@ class UploadController extends LfmController {
         $new_filename = $file->getClientOriginalName();
 
         if (Config::get('lfm.rename_file') === true) {
-            $new_filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $new_filename = uniqid();
         } else {
-            $new_filename = preg_replace('/[^A-Za-z0-9\-\']/', '_', $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
+            $new_filename = preg_replace('/[^A-Za-z0-9\-\']/', '_', $file->getClientOriginalName());
         }
+
+        $new_filename = $new_filename . '.' . $file->getClientOriginalExtension();
 
         return $new_filename;
     }
@@ -121,7 +123,7 @@ class UploadController extends LfmController {
 
         $thumb_img = Image::make($dest_path . $new_filename);
         $thumb_img->fit(200, 200)
-            ->save($dest_path . $thumb_folder_name . DIRECTORY_SEPARATOR . $new_filename);
+            ->save($dest_path . $thumb_folder_name . '/' . $new_filename);
         unset($thumb_img);
     }
 
