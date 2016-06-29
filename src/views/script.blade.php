@@ -2,8 +2,8 @@
 var ds            = '/';
 var home_dir      = ds + "{{ (Config::get('lfm.allow_multi_user')) ? Auth::user()->user_field : '' }}";
 var shared_folder = ds + "{{ Config::get('lfm.shared_folder_name') }}";
-var image_url     = "{{ Config::get('lfm.images_url') }}";
-var file_url      = "{{ Config::get('lfm.files_url') }}";
+var image_url     = "{{ asset(Config::get('lfm.images_url')) }}";
+var file_url      = "{{ asset(Config::get('lfm.files_url')) }}";
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:"{{ Lang::get('laravel-filemanager::lfm.locale-bootbox') }}"});
@@ -37,8 +37,7 @@ $('#add-folder').click(function () {
 $('#upload-btn').click(function () {
   var options = {
     beforeSubmit:  showRequest,
-    success:       showResponse,
-    error:         showError
+    success:       showResponse
   };
 
   function showRequest(formData, jqForm, options) {
@@ -54,17 +53,6 @@ $('#upload-btn').click(function () {
     }
     $('#upload').val('');
     loadItems();
-  }
-
-  function showError(jqXHR, textStatus, errorThrown) {
-    $('#upload-btn').html('{{ Lang::get("laravel-filemanager::lfm.btn-upload") }}');
-    if (jqXHR.status == 413) {
-      notify('{{ Lang::get("laravel-filemanager::lfm.error-too-large") }}');
-    } else if (textStatus == 'error') {
-      notify('{{ Lang::get("laravel-filemanager::lfm.error-other") }}' + errorThrown);
-    } else {
-      notify('{{ Lang::get("laravel-filemanager::lfm.error-other") }}' + textStatus + '<br>' + errorThrown);
-    }
   }
 
   $('#uploadForm').ajaxSubmit(options);
@@ -120,7 +108,7 @@ function loadFolders() {
   $.ajax({
     type: 'GET',
     dataType: 'html',
-    url: '/laravel-filemanager/folders',
+    url: 'laravel-filemanager/folders',
     data: {
       working_dir: $('#working_dir').val(),
       show_list: $('#show_list').val(),
@@ -139,7 +127,7 @@ function loadItems() {
   $.ajax({
     type: 'GET',
     dataType: 'html',
-    url: '/laravel-filemanager/jsonitems',
+    url: 'laravel-filemanager/jsonitems',
     data: {
       working_dir: working_dir,
       show_list: $('#show_list').val(),
@@ -158,7 +146,7 @@ function createFolder(folder_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '/laravel-filemanager/newfolder',
+    url: 'laravel-filemanager/newfolder',
     data: {
       name: folder_name,
       working_dir: $('#working_dir').val(),
@@ -185,7 +173,7 @@ function rename(item_name) {
         $.ajax({
           type: 'GET',
           dataType: 'text',
-          url: '/laravel-filemanager/rename',
+          url: 'laravel-filemanager/rename',
           data: {
             file: item_name,
             working_dir: $('#working_dir').val(),
@@ -212,7 +200,7 @@ function trash(item_name) {
       $.ajax({
         type: 'GET',
         dataType: 'text',
-        url: '/laravel-filemanager/delete',
+        url: 'laravel-filemanager/delete',
         data: {
           working_dir: $('#working_dir').val(),
           items: item_name,
@@ -237,7 +225,7 @@ function cropImage(image_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '/laravel-filemanager/crop',
+    url: 'laravel-filemanager/crop',
     data: {
       img: image_name,
       working_dir: $('#working_dir').val(),
@@ -254,7 +242,7 @@ function resizeImage(image_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '/laravel-filemanager/resize',
+    url: 'laravel-filemanager/resize',
     data: {
       img: image_name,
       working_dir: $('#working_dir').val(),
@@ -268,7 +256,7 @@ function resizeImage(image_name) {
 }
 
 function download(file_name) {
-  location.href = '/laravel-filemanager/download?'
+  location.href = 'laravel-filemanager/download?'
   + 'working_dir='
   + $('#working_dir').val()
   + '&type='
