@@ -112,7 +112,7 @@ function loadFolders() {
   $.ajax({
     type: 'GET',
     dataType: 'html',
-    url: '{{ route("unisharp.lfm.getFolders") }}',
+    url: 'laravel-filemanager/folders',
     data: {
       working_dir: $('#working_dir').val(),
       show_list: $('#show_list').val(),
@@ -131,7 +131,7 @@ function loadItems() {
   $.ajax({
     type: 'GET',
     dataType: 'html',
-    url: '{{ route("unisharp.lfm.getItems") }}',
+    url: 'laravel-filemanager/jsonitems',
     data: {
       working_dir: working_dir,
       show_list: $('#show_list').val(),
@@ -150,7 +150,7 @@ function createFolder(folder_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '{{ route("unisharp.lfm.getAddfolder") }}',
+    url: 'laravel-filemanager/newfolder',
     data: {
       name: folder_name,
       working_dir: $('#working_dir').val(),
@@ -177,7 +177,7 @@ function rename(item_name) {
         $.ajax({
           type: 'GET',
           dataType: 'text',
-          url: '{{ route("unisharp.lfm.getRename") }}',
+          url: 'laravel-filemanager/rename',
           data: {
             file: item_name,
             working_dir: $('#working_dir').val(),
@@ -204,7 +204,7 @@ function trash(item_name) {
       $.ajax({
         type: 'GET',
         dataType: 'text',
-        url: '{{ route("unisharp.lfm.getDelete") }}',
+        url: 'laravel-filemanager/delete',
         data: {
           working_dir: $('#working_dir').val(),
           items: item_name,
@@ -229,7 +229,7 @@ function cropImage(image_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '{{ route("unisharp.lfm.getCrop") }}',
+    url: 'laravel-filemanager/crop',
     data: {
       img: image_name,
       working_dir: $('#working_dir').val(),
@@ -246,7 +246,7 @@ function resizeImage(image_name) {
   $.ajax({
     type: 'GET',
     dataType: 'text',
-    url: '{{ route("unisharp.lfm.getResize") }}',
+    url: 'laravel-filemanager/resize',
     data: {
       img: image_name,
       working_dir: $('#working_dir').val(),
@@ -260,7 +260,7 @@ function resizeImage(image_name) {
 }
 
 function download(file_name) {
-  location.href = '{{ route("unisharp.lfm.getDownload") }}?'
+  location.href = 'laravel-filemanager/download?'
   + 'working_dir='
   + $('#working_dir').val()
   + '&type='

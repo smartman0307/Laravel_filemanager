@@ -11,7 +11,7 @@
       <br>
       <button class="btn btn-primary" onclick="performCrop()">{{ Lang::get('laravel-filemanager::lfm.btn-crop') }}</button>
       <button class="btn btn-info" onclick="loadItems()">{{ Lang::get('laravel-filemanager::lfm.btn-cancel') }}</button>
-      <form action="{{ route('unisharp.lfm.getCrop') }}" role='form' name='cropForm' id='cropForm' mathod='post'>
+      <form action="{{url('/laravel-filemanager/crop')}}" role='form' name='cropForm' id='cropForm' mathod='post'>
         <input type="hidden" id="img" name="img" value="{{ $img }}">
         <input type="hidden" id="working_dir" name="working_dir" value="{{ $working_dir }}">
         <input type="hidden" id="dataX" name="dataX">
@@ -31,6 +31,7 @@
     $dataY = $('#dataY'),
     $dataHeight = $('#dataHeight'),
     $dataWidth = $('#dataWidth');
+
     $('.crop-container > img').cropper({
       //aspectRatio: 16 / 9,
       preview: ".img-preview",
@@ -44,11 +45,12 @@
       }
     });
   });
+
   function performCrop() {
     $.ajax({
       type: "GET",
       dataType: "text",
-      url: "{{ route('unisharp.lfm.getCropimage') }}",
+      url: "laravel-filemanager/cropimage",
       data: {
         img: '{{ $img }}',
         working_dir: $("#working_dir").val(),

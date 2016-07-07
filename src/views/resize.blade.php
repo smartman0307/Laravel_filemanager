@@ -74,7 +74,7 @@
     $.ajax({
       type: "GET",
       dataType: "text",
-      url: "{{ route('unisharp.lfm.performResize') }}",
+      url: "laravel-filemanager/doresize",
       data: {
         img: '{{ $img }}',
         working_dir: $("#working_dir").val(),
