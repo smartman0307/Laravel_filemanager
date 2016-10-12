@@ -20,7 +20,7 @@ class ItemsController extends LfmController {
     public function getItems()
     {
         $type = Input::get('type');
-        $view = $this->getView();
+        $view = $this->getView($type);
         $path = parent::getPath();
 
         $files       = File::files($path);
@@ -29,7 +29,7 @@ class ItemsController extends LfmController {
         $thumb_url   = parent::getUrl('thumb');
 
         return view($view)
-            ->with(compact('type', 'file_info', 'directories', 'thumb_url'));
+            ->with(compact('files', 'file_info', 'directories', 'thumb_url'));
     }
 
 
@@ -79,12 +79,18 @@ class ItemsController extends LfmController {
     }
 
 
-    private function getView()
+    private function getView($type = 'Images')
     {
-        if (Input::get('show_list') == 1) {
-            return 'laravel-filemanager::list-view';
-        } else {
-            return 'laravel-filemanager::grid-view';
+        $view = 'laravel-filemanager::images';
+
+        if ($type !== 'Images') {
+            $view = 'laravel-filemanager::files';
         }
+
+        if (Input::get('show_list') == 1) {
+            $view .= '-list';
+        }
+
+        return $view;
     }
 }
