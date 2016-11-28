@@ -47,11 +47,7 @@ class UploadController extends LfmController {
             return Lang::get('laravel-filemanager::lfm.error-file-exist');
         }
 
-        //Apply orientation from exif data
-        $img = Image::make($file->getRealPath())->orientate();
-        $upload = $img->save($dest_path . $new_filename, 90);
-
-        //$file->move($dest_path, $new_filename);
+        $file->move($dest_path, $new_filename);
 
         if ('Images' === $this->file_type) {
             $this->makeThumb($dest_path, $new_filename);
