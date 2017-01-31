@@ -1,5 +1,3 @@
-var show_list;
-
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
   loadFolders();
@@ -54,12 +52,12 @@ $('#upload-btn').click(function () {
 });
 
 $('#thumbnail-display').click(function () {
-  show_list = 0;
+  $('#show_list').val(0);
   loadItems();
 });
 
 $('#list-display').click(function () {
-  show_list = 1;
+  $('#show_list').val(1);
   loadItems();
 });
 
@@ -139,13 +137,12 @@ function loadFolders() {
 }
 
 function loadItems() {
-  performLfmRequest('jsonitems', {show_list: show_list}, 'html')
+  console.log('Current working_dir : ' + $('#working_dir').val());
+
+  performLfmRequest('jsonitems', {show_list: $('#show_list').val()}, 'html')
     .done(function (data) {
-      var response = JSON.parse(data);
-      $('#content').html(response.html);
+      $('#content').html(data);
       $('#nav-buttons').removeClass('hidden');
-      $('#working_dir').val(response.working_dir);
-      console.log('Current working_dir : ' + $('#working_dir').val());
       setOpenFolders();
     });
 }

@@ -63,18 +63,7 @@ trait LfmHelpers
 
     private function getFormatedWorkingDir()
     {
-        $working_dir = request('working_dir');
-
-        if (is_null($working_dir)) {
-            $default_folder_type = 'share';
-            if ($this->allowMultiUser()) {
-                $default_folder_type = 'user';
-            }
-
-            $working_dir = $this->rootFolder($default_folder_type);
-        }
-
-        return $this->removeFirstSlash($working_dir);
+        return $this->removeFirstSlash(request('working_dir'));
     }
 
     private function appendThumbFolderPath($is_thumb)
@@ -119,12 +108,12 @@ trait LfmHelpers
         return $file_name;
     }
 
-    public function getInternalPath($full_path)
+    public function getInternalPath($file)
     {
-        $full_path = $this->translateToLfmPath($full_path);
-        $lfm_dir_start = strpos($full_path, $this->getPathPrefix('dir'));
+        $file = $this->translateToLfmPath($file);
+        $lfm_dir_start = strpos($file, $this->getPathPrefix('dir'));
         $working_dir_start = $lfm_dir_start + strlen($this->getPathPrefix('dir'));
-        $lfm_file_path = $this->ds . substr($full_path, $working_dir_start);
+        $lfm_file_path = $this->ds . substr($file, $working_dir_start);
 
         return $this->removeDuplicateSlash($lfm_file_path);
     }

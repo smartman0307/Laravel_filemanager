@@ -26,6 +26,11 @@ class LfmController extends Controller
      */
     public function show()
     {
+        $default_folder_type = 'share';
+        if ($this->allowMultiUser()) {
+            $default_folder_type = 'user';
+        }
+
         $type_key = $this->currentLfmType();
         $mine_config = 'lfm.valid_' . $type_key . '_mimetypes';
         $config_error = null;
@@ -36,7 +41,9 @@ class LfmController extends Controller
 
         return view('laravel-filemanager::index')->with([
             'url_prefix'   => config('lfm.' . $type_key . 's_url'),
+            'working_dir'  => $this->rootFolder($default_folder_type),
             'file_type'    => $this->currentLfmType(true),
+            'startup_view' => config('lfm.' . $type_key . '_startup_view'),
             'success_response' => $this->success_response,
             'lfm_route'    => url(config('lfm.prefix')),
             'lang'         => trans('laravel-filemanager::lfm'),
