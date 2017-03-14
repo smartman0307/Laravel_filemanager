@@ -1,27 +1,12 @@
 #wrapper {
-  margin: 10px;
+  min-height: calc(100vh - 20px);
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 #main {
   border-left: 1px solid silver;
-}
-
-#fab a:hover, #fab a:focus{
-  color: white;
-}
-
-@media screen and (max-width: 992px) {
-  #nav a {
-    font-size: 30px;
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
-  #nav a i {
-    padding-bottom: 10px;
-  }
-  #fab {
-    zoom: 2.5;
-  }
+  min-height: calc(100vh - 90px);
 }
 
 .img-row {
@@ -47,13 +32,7 @@
 .thumbnail {
   max-width: 210px;
   max-height: 210px;
-  margin-bottom: 0 !important;
-}
-
-.thumbnail-mobile {
-  height: 210px;
-  width: 210px;
-  margin: 30px;
+  margin-bottom: 10px;
 }
 
 .square {
