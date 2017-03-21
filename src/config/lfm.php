@@ -75,9 +75,6 @@ return [
     'max_image_size' => 50000,
     'max_file_size' => 50000,
 
-    'should_validate_mime' => false,
-    'should_validate_size' => false,
-
     // available since v1.3.0
     'valid_image_mimetypes' => [
         'image/jpeg',
