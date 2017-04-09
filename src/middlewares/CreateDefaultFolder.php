@@ -23,10 +23,6 @@ class CreateDefaultFolder
             return;
         }
 
-        if ($type === 'share' && (!$this->enabledShareFolder()  || !$this->allowMultiUser())) {
-            return;
-        }
-
         $path = $this->getRootFolderPath($type);
 
         $this->createFolderByPath($path);

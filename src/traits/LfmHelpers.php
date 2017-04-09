@@ -72,7 +72,7 @@ trait LfmHelpers
     {
         $working_dir = request('working_dir');
 
-        if (empty($working_dir)) {
+        if (is_null($working_dir)) {
             $default_folder_type = 'share';
             if ($this->allowMultiUser()) {
                 $default_folder_type = 'user';
@@ -226,17 +226,12 @@ trait LfmHelpers
         return config('lfm.allow_multi_user') === true;
     }
 
-    public function enabledShareFolder()
-    {
-        return config('lfm.allow_share_folder') === true;
-    }
-
 
     /****************************
      ***     File System      ***
      ****************************/
 
-    public function getDirectories($path, $sort_type = 0)
+    public function getDirectories($path)
     {
         $thumb_folder_name = config('lfm.thumb_folder_name');
         $all_directories = File::directories($path);
@@ -249,22 +244,20 @@ trait LfmHelpers
             if ($directory_name !== $thumb_folder_name) {
                 $arr_dir[] = (object)[
                     'name' => $directory_name,
-                    'updated' => filemtime($directory),
-                    'path' => $this->getInternalPath($directory)
+                    'path' => $this->getInternalPath($directory),
+                    'time' => date("Y-m-d h:m", filemtime($directory)),
+                    'type' => trans('laravel-filemanager::lfm.type-folder'),
+                    'icon' => 'fa-folder-o',
+                    'thumb' => asset('vendor/laravel-filemanager/img/folder.png'),
+                    'is_file' => false
                 ];
             }
-        }
-
-        if ($sort_type == 0) {
-            uasort($arr_dir, array($this, 'cmpDirAlpha'));
-        } elseif ($sort_type == 1) {
-            uasort($arr_dir, array($this, 'cmpDirTime'));
         }
 
         return $arr_dir;
     }
 
-    public function getFilesWithInfo($path, $sort_type = 0)
+    public function getFilesWithInfo($path)
     {
         $arr_files = [];
 
@@ -288,21 +281,17 @@ trait LfmHelpers
             }
 
 
-            $arr_files[$key] = [
+            $arr_files[$key] = (object)[
                 'name'      => $file_name,
                 'url'       => $this->getFileUrl($file_name),
                 'size'      => $this->humanFilesize(File::size($file)),
                 'updated'   => filemtime($file),
+                'time'      => date("Y-m-d h:m", filemtime($file)),
                 'type'      => $file_type,
                 'icon'      => $icon,
-                'thumb'     => $thumb_url
+                'thumb'     => $thumb_url,
+                'is_file'   => true
             ];
-        }
-
-        if ($sort_type == 0) {
-            uasort($arr_files, array($this, 'cmpAlpha'));
-        } elseif ($sort_type == 1) {
-            uasort($arr_files, array($this, 'cmpTime'));
         }
 
         return $arr_files;
@@ -329,42 +318,6 @@ trait LfmHelpers
         }
 
         return starts_with($mime_type, 'image');
-    }
-
-    private static function cmpDirAlpha($a, $b)
-    {
-        $cmp = strcmp($a->name, $b->name);
-
-        if ($cmp == 0)
-            return 0;
-
-        return ($cmp > 0) ? 1 : -1;
-    }
-
-    private static function cmpDirTime($a, $b)
-    {
-        if ($a->updated == $b->updated)
-            return 0;
-
-        return ($a->updated > $b->updated) ? 1 : -1;
-    }
-
-    private static function cmpAlpha($a, $b)
-    {
-        $cmp = strcmp($a['name'], $b['name']);
-
-        if ($cmp == 0)
-            return 0;
-
-        return ($cmp > 0) ? 1 : -1;
-    }
-
-    private static function cmpTime($a, $b)
-    {
-        if ($a['updated'] == $b['updated'])
-            return 0;
-
-        return ($a['updated'] > $b['updated']) ? 1 : -1;
     }
 
 

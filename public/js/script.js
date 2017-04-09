@@ -1,5 +1,4 @@
 var show_list;
-var sort_type = 0;
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
@@ -26,10 +25,7 @@ $('#nav-buttons a').click(function (e) {
 });
 
 $('#to-previous').click(function () {
-  var ds = '/';
-  var working_dir = $('#working_dir').val();
-  var last_ds = working_dir.lastIndexOf(ds);
-  var previous_dir = working_dir.substring(0, last_ds);
+  var previous_dir = getPreviousDir();
   if (previous_dir == '') return;
   goTo(previous_dir);
 });
@@ -39,6 +35,10 @@ $('#add-folder').click(function () {
     if (result == null) return;
     createFolder(result);
   });
+});
+
+$('#upload').click(function () {
+  $('#uploadModal').modal('show');
 });
 
 $('#upload-btn').click(function () {
@@ -75,16 +75,6 @@ $('#list-display').click(function () {
   loadItems();
 });
 
-$('#list-sort-alpha').click(function() {
-  sort_type = 0;
-  loadItems();
-});
-
-$('#list-sort-time').click(function() {
-  sort_type = 1;
-  loadItems();
-});
-
 // ======================
 // ==  Folder actions  ==
 // ======================
@@ -96,6 +86,14 @@ $(document).on('click', '.folder-item', function (e) {
 function goTo(new_dir) {
   $('#working_dir').val(new_dir);
   loadItems();
+}
+
+function getPreviousDir() {
+  var ds = '/';
+  var working_dir = $('#working_dir').val();
+  var last_ds = working_dir.lastIndexOf(ds);
+  var previous_dir = working_dir.substring(0, last_ds);
+  return previous_dir;
 }
 
 function dir_starts_with(str) {
@@ -140,9 +138,9 @@ function performLfmRequest(url, parameter, type) {
 }
 
 var refreshFoldersAndItems = function (data) {
-  loadFolders();
-  if (data != 'OK') {
-    data = Array.isArray(data) ? data.join('<br/>') : data;
+  if (data == 'OK') {
+    loadFolders();
+  } else {
     notify(data);
   }
 };
@@ -161,13 +159,18 @@ function loadFolders() {
 }
 
 function loadItems() {
-  performLfmRequest('jsonitems', {show_list: show_list, sort_type: sort_type}, 'html')
+  performLfmRequest('jsonitems', {show_list: show_list}, 'html')
     .done(function (data) {
       var response = JSON.parse(data);
       $('#content').html(response.html);
       $('#nav-buttons').removeClass('hidden');
       $('#working_dir').val(response.working_dir);
       console.log('Current working_dir : ' + $('#working_dir').val());
+      if (getPreviousDir() == '') {
+        $('#to-previous').addClass('hide');
+      } else {
+        $('#to-previous').removeClass('hide');
+      }
       setOpenFolders();
     });
 }

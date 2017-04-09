@@ -16,12 +16,12 @@ class ItemsController extends LfmController
     public function getItems()
     {
         $path = $this->getCurrentPath();
-        $sort_type = request('sort_type');
 
         return [
             'html' => (string)view($this->getView())->with([
-                'files'       => $this->getFilesWithInfo($path, $sort_type),
-                'directories' => $this->getDirectories($path, $sort_type)
+                'files'       => $this->getFilesWithInfo($path),
+                'directories' => $this->getDirectories($path),
+                'items'       => array_merge($this->getDirectories($path), $this->getFilesWithInfo($path))
             ]),
             'working_dir' => $this->getInternalPath($path)
         ];
