@@ -3,48 +3,22 @@
 [![Total Downloads](https://poser.pugx.org/unisharp/laravel-filemanager/downloads)](https://packagist.org/packages/unisharp/laravel-filemanager)
 [![License](https://poser.pugx.org/unisharp/laravel-filemanager/license)](https://packagist.org/packages/unisharp/laravel-filemanager)
 
-To preview all features, clone [Laravel Filemanager container](https://github.com/UniSharp/laravel-filemanager-example-5.3).
+ * Document : [unisharp.github.io/laravel-filemanager](http://unisharp.github.io/laravel-filemanager/)
+   * [Installation](http://unisharp.github.io/laravel-filemanager/installation)
+   * [Integration](http://unisharp.github.io/laravel-filemanager/integration)
+   * [Config](http://unisharp.github.io/laravel-filemanager/config)
+   * [Customization](http://unisharp.github.io/laravel-filemanager/customization)
+   * [Events](http://unisharp.github.io/laravel-filemanager/events)
+   * [Upgrade](http://unisharp.github.io/laravel-filemanager/upgrade)
+ * Demo : [Laravel Filemanager container](https://github.com/UniSharp/laravel-filemanager-example-5.3)
 
 ## v1.7 released
  * Important changes :
-  * All code refactored.
-  * Fix Windows compatibility.
-  * Fix file cannot be uploaded to "File Mode".
-  * Config file is also refactored, see [config document](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/config.md).
- * Please follow the intructions in [this document](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/upgrade.md) to upgrade.
-
-## Documents
-  1. [Installation](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/installation.md)
-  1. [Integration](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/integration.md)
-  1. [Config](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/config.md)
-  1. [Customization](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/customization.md)
-  1. [Events](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/events.md)
-  1. [Upgrade](https://github.com/UniSharp/laravel-filemanager/blob/master/docs/upgrade.md)
-
-## Features
- * CKEditor and TinyMCE integration
- * Standalone button
- * Uploading validation
- * Cropping and resizing of images
- * Public and private folders for multi users
- * Customizable routes, middlewares, views, and folder path
- * Supports two types : files and images. Each type works in different directory.
- * Supported locales : ar, bg, de, el, en, es, fa, fr, he, hu, nl, pl, pt-BR, pt_PT, ro, ru, tr, zh-CN, zh-TW
-
-PR is welcome!
-
-## Screenshots
-> Standalone button :
-
-![Standalone button demo](https://raw.githubusercontent.com/UniSharp/laravel-filemanager/gh_pages/images/lfm01.png)
-
-> Grid view :
-
-![Grid view demo](https://raw.githubusercontent.com/UniSharp/laravel-filemanager/gh_pages/images/lfm02.png)
-
-> List view :
-
-![List view demo](https://raw.githubusercontent.com/UniSharp/laravel-filemanager/gh_pages/images/lfm03.png)
+   * All code refactored.
+   * Fix Windows compatibility.
+   * Fix file cannot be uploaded to "File Mode".
+   * Config file is also refactored, see [config document](https://unisharp.github.io/laravel-filemanager/config).
+ * Please follow the intructions in [this document](https://unisharp.github.io/laravel-filemanager/upgrade) to upgrade.
   
 ## Credits
 Special thanks to
