@@ -17,16 +17,16 @@ class RenameController extends LfmController
      */
     public function getRename()
     {
-        $old_name = parent::translateFromUtf8(request('file'));
-        $new_name = parent::translateFromUtf8(trim(request('new_name')));
+        $old_name = $this->translateFromUtf8(request('file'));
+        $new_name = $this->translateFromUtf8(trim(request('new_name')));
 
         $old_file = parent::getCurrentPath($old_name);
 
         if (empty($new_name)) {
             if (File::isDirectory($old_file)) {
-                return parent::error('folder-name');
+                return $this->error('folder-name');
             } else {
-                return parent::error('file-name');
+                return $this->error('file-name');
             }
         }
 
@@ -44,18 +44,18 @@ class RenameController extends LfmController
         }
 
         if (config('lfm.alphanumeric_directory') && preg_match('/[^\w-]/i', $new_name)) {
-            return parent::error('folder-alnum');
+            return $this->error('folder-alnum');
         } elseif (File::exists($new_file)) {
-            return parent::error('rename');
+            return $this->error('rename');
         }
 
         if (File::isDirectory($old_file)) {
             File::move($old_file, $new_file);
             event(new FolderWasRenamed($old_file, $new_file));
-            return parent::$success_response;
+            return $this->success_response;
         }
 
-        if (parent::fileIsImage($old_file)) {
+        if ($this->fileIsImage($old_file)) {
             File::move(parent::getThumbPath($old_name), parent::getThumbPath($new_name));
         }
 
@@ -63,6 +63,6 @@ class RenameController extends LfmController
 
         event(new ImageWasRenamed($old_file, $new_file));
 
-        return parent::$success_response;
+        return $this->success_response;
     }
 }

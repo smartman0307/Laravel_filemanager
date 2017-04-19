@@ -235,6 +235,13 @@ trait LfmHelpers
     {
         return config('lfm.allow_share_folder') === true;
     }
+    
+    public function applyIniOverrides()
+    {
+        foreach (config('lfm.php_ini_overrides') as $key => $value) {
+            if ($value && $value != 'false') ini_set($key, $value);
+        }
+    }
 
 
     /****************************
@@ -276,7 +283,7 @@ trait LfmHelpers
             $file_name = $this->getName($file);
 
             if ($this->fileIsImage($file)) {
-                $file_type = $this->getFileType($file);
+                $file_type = File::mimeType($file);
                 $icon = 'fa-image';
             } else {
                 $extension = strtolower(File::extension($file_name));
