@@ -1,5 +1,5 @@
 var show_list;
-var sort_type = 'alphabetic';
+var sort_type = 'alpha';
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
@@ -59,9 +59,9 @@ $('#upload-btn').click(function () {
       resetUploadForm();
       refreshFoldersAndItems(data);
     },
-    error: function (jqXHR, textStatus, errorThrown) {
-      displayErrorResponse(jqXHR);
+    error: function () {
       resetUploadForm();
+      notify('Action failed, due to server error.');
     }
   });
 });
@@ -76,8 +76,8 @@ $('#list-display').click(function () {
   loadItems();
 });
 
-$('#list-sort-alphabetic').click(function() {
-  sort_type = 'alphabetic';
+$('#list-sort-alpha').click(function() {
+  sort_type = 'alpha';
   loadItems();
 });
 
@@ -143,13 +143,9 @@ function performLfmRequest(url, parameter, type) {
     url: lfm_route + '/' + url,
     data: data,
     cache: false
-  }).fail(function (jqXHR, textStatus, errorThrown) {
-    displayErrorResponse(jqXHR);
+  }).fail(function () {
+    notify('Action failed, due to server error.');
   });
-}
-
-function displayErrorResponse(jqXHR) {
-  notify('<div style="max-height:50vh;overflow: scroll;">' + jqXHR.responseText + '</div>');
 }
 
 var refreshFoldersAndItems = function (data) {

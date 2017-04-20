@@ -34,7 +34,7 @@ class UploadController extends LfmController
         }
 
         if (is_array($files)) {
-            $response = count($error_bag) > 0 ? $error_bag : parent::$success_response;
+            $response = count($error_bag) > 0 ? $error_bag : $this->success_response;
         } else { // upload via ckeditor 'Upload' tab
             $response = $this->useFile($new_filename);
         }
@@ -54,7 +54,7 @@ class UploadController extends LfmController
 
         event(new ImageIsUploading($new_file_path));
         try {
-            if (parent::fileIsImage($file) && parent::isImageToThumb($file)) {
+            if ($this->fileIsImage($file) && $this->isImageToThumb($file)) {
                 Image::make($file->getRealPath())
                     ->orientate() //Apply orientation from exif data
                     ->save($new_file_path, 90);
@@ -65,7 +65,7 @@ class UploadController extends LfmController
                 File::move($file->path(), $new_file_path);
             }
         } catch (\Exception $e) {
-            return parent::error('invalid');
+            return $this->error('invalid');
         }
         event(new ImageWasUploaded(realpath($new_file_path)));
 
@@ -78,12 +78,12 @@ class UploadController extends LfmController
         $force_invalid = false;
 
         if (empty($file)) {
-            return parent::error('file-empty');
+            return $this->error('file-empty');
         } elseif (!$file instanceof UploadedFile) {
-            return parent::error('instance');
+            return $this->error('instance');
         } elseif ($file->getError() == UPLOAD_ERR_INI_SIZE) {
             $max_size = ini_get('upload_max_filesize');
-            return parent::error('file-size', ['max' => $max_size]);
+            return $this->error('file-size', ['max' => $max_size]);
         } elseif ($file->getError() != UPLOAD_ERR_OK) {
             return 'File failed to upload. Error code: ' . $file->getError();
         }
@@ -91,27 +91,27 @@ class UploadController extends LfmController
         $new_filename = $this->getNewName($file);
 
         if (File::exists(parent::getCurrentPath($new_filename))) {
-            return parent::error('file-exist');
+            return $this->error('file-exist');
         }
 
         $mimetype = $file->getMimeType();
 
         // size to kb unit is needed
         $file_size = $file->getSize() / 1000;
-        $type_key = parent::currentLfmType();
+        $type_key = $this->currentLfmType();
 
-        if (config('lfm.should_validate_mime', false)) {
+        if (config('lfm.should_validate_mime')) {
             $mine_config = 'lfm.valid_' . $type_key . '_mimetypes';
             $valid_mimetypes = config($mine_config, []);
             if (false === in_array($mimetype, $valid_mimetypes)) {
-                return parent::error('mime') . $mimetype;
+                return $this->error('mime') . $mimetype;
             }
         }
 
-        if (config('lfm.should_validate_size', false)) {
+        if (config('lfm.should_validate_size')) {
             $max_size = config('lfm.max_' . $type_key . '_size', 0);
             if ($file_size > $max_size) {
-                return parent::error('size') . $mimetype;
+                return $this->error('size') . $mimetype;
             }
         }
 
@@ -120,7 +120,7 @@ class UploadController extends LfmController
 
     private function getNewName($file)
     {
-        $new_filename = parent::translateFromUtf8(trim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)));
+        $new_filename = $this->translateFromUtf8(trim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)));
 
         if (config('lfm.rename_file') === true) {
             $new_filename = uniqid();
@@ -134,7 +134,7 @@ class UploadController extends LfmController
     private function makeThumb($new_filename)
     {
         // create thumb folder
-        parent::createFolderByPath(parent::getThumbPath());
+        $this->createFolderByPath(parent::getThumbPath());
 
         // create thumb image
         Image::make(parent::getCurrentPath($new_filename))

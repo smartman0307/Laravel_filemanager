@@ -36,14 +36,14 @@ class RedirectController extends LfmController
 
     private function responseImageOrFile($file_name)
     {
-        $file_path = parent::getCurrentPath($file_name);
+        $file_path = $this->getCurrentPath($file_name);
 
         if (!File::exists($file_path)) {
             abort(404);
         }
 
         $file = File::get($file_path);
-        $type = parent::getFileType($file_path);
+        $type = File::mimeType($file_path);
 
         $response = Response::make($file);
         $response->header("Content-Type", $type);
