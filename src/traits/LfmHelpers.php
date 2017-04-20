@@ -96,9 +96,9 @@ trait LfmHelpers
         }
 
         $thumb_folder_name = config('lfm.thumb_folder_name');
-        //if user is inside thumbs folder there is no need
-        // to add thumbs substring to the end of $url
-        $in_thumb_folder = preg_match('/'.$thumb_folder_name.'$/i', $this->getFormatedWorkingDir());
+        // if user is inside thumbs folder, there is no need
+        // to add thumbs substring to the end of url
+        $in_thumb_folder = str_contains($this->getFormatedWorkingDir(), $this->ds . $thumb_folder_name);
 
         if (!$in_thumb_folder) {
             return $thumb_folder_name . $this->ds;
@@ -283,7 +283,7 @@ trait LfmHelpers
             $file_name = $this->getName($file);
 
             if ($this->fileIsImage($file)) {
-                $file_type = File::mimeType($file);
+                $file_type = $this->getFileType($file);
                 $icon = 'fa-image';
             } else {
                 $extension = strtolower(File::extension($file_name));
@@ -376,7 +376,7 @@ trait LfmHelpers
     {
         if ($sort_type == 'time') {
             $key_to_sort = 'updated';
-        } elseif ($sort_type == 'alpha') {
+        } elseif ($sort_type == 'alphabetic') {
             $key_to_sort = 'name';
         } else {
             $key_to_sort = 'updated';
