@@ -235,13 +235,6 @@ trait LfmHelpers
     {
         return config('lfm.allow_share_folder') === true;
     }
-    
-    public function applyIniOverrides()
-    {
-        foreach (config('lfm.php_ini_overrides') as $key => $value) {
-            if ($value && $value != 'false') ini_set($key, $value);
-        }
-    }
 
 
     /****************************
@@ -261,6 +254,8 @@ trait LfmHelpers
             if ($directory_name !== $thumb_folder_name) {
                 $arr_dir[] = (object)[
                     'name'    => $directory_name,
+                    'url'     => '',
+                    'size'    => '',
                     'updated' => filemtime($directory),
                     'path'    => $this->getInternalPath($directory),
                     'time'    => date("Y-m-d h:m", filemtime($directory)),
@@ -307,6 +302,7 @@ trait LfmHelpers
                 'url'       => $this->getFileUrl($file_name),
                 'size'      => $this->humanFilesize(File::size($file)),
                 'updated'   => filemtime($file),
+                'path'      => '',
                 'time'      => date("Y-m-d h:m", filemtime($file)),
                 'type'      => $file_type,
                 'icon'      => $icon,
