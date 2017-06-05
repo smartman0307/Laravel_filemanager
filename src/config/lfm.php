@@ -167,6 +167,7 @@ return [
     | Please note that the 'upload_max_filesize' & 'post_max_size'
     | directives are not supported.
     */
+
     'php_ini_overrides' => [
         'memory_limit'        => '256M'
     ]
