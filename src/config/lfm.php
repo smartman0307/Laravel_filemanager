@@ -17,6 +17,10 @@ return [
     // The url to this package. Change it if necessary.
     'prefix' => 'laravel-filemanager',
 
+    // The prefix of urls to non-public files, for exmaple if: base_directory !== 'public'
+    // Without slashes
+    'urls_prefix' => '',
+
     /*
     |--------------------------------------------------------------------------
     | Multi-User Mode
@@ -72,7 +76,7 @@ return [
     'rename_file' => false,
 
     // If rename_file set to false and this set to true, then non-alphanumeric characters in filename will be replaced.
-    'alphanumeric_filename' => false,
+    'alphanumeric_filename' => true,
 
     // If true, non-alphanumeric folder name will be rejected.
     'alphanumeric_directory' => false,

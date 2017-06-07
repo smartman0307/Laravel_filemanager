@@ -59,7 +59,6 @@ return [
     'btn-uploading'     => 'Uploading...',
     'btn-close'         => 'Close',
     'btn-crop'          => 'Crop',
-    'btn-copy-crop'     => 'Copy & Crop',
     'btn-cancel'        => 'Cancel',
     'btn-resize'        => 'Resize',
 

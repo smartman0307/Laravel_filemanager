@@ -1,31 +1,17 @@
 <?php
 
-class ApiTest extends Illuminate\Foundation\Testing\TestCase
+use Illuminate\Http\UploadedFile;
+
+class ApiTest extends TestCase
 {
     /**
-     * The base URL to use while testing the application.
+     * 測試資料夾 API
      *
-     * @var string
+     * @group directory
      */
-    protected $baseUrl = 'http://localhost';
-
-    /**
-     * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
-     */
-    public function createApplication()
-    {
-        $app = require './bootstrap/app.php';
-
-        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
-        return $app;
-    }
-
     public function testFolder()
     {
-        auth()->loginUsingId(1);
+        // auth()->loginUsingId(1);
 
         $create = $this->getResponseByRouteName('getAddfolder', [
             'name' => 'testcase'
@@ -61,10 +47,59 @@ class ApiTest extends Illuminate\Foundation\Testing\TestCase
         $this->assertEquals('OK', $delete);
     }
 
-    private function getResponseByRouteName($route_name, $input = [])
+    /**
+     * 上傳一筆檔案
+     *
+     * @group image
+     */
+    public function testUploadImage()
     {
-        $response = $this->call('GET', route('unisharp.lfm.' . $route_name), $input);
-        $data = json_encode($response);
-        return $response->getContent();
+        $file = UploadedFile::fake()->image('test.jpg');
+
+        $response = $this->json('GET', route('unisharp.lfm.upload'), [
+            'upload' => [$file]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'created' => 'OK',
+        ]);
+
+        $filename = json_decode($response->getContent())->filenames[0];
+        $thumb_filename = substr_replace($filename, '_S', strrpos($filename, '.'), 0);
+        $file_path = $this->getStoragedFilePath($filename);
+        $thumb_file_path = $this->getStoragedFilePath($thumb_filename);
+        $this->assertFileExists($file_path);
+        $this->assertFileExists($thumb_file_path);
+
+        @unlink($file_path);
+        @unlink($thumb_file_path);
     }
+
+    /**
+     * 刪除檔案
+     *
+     * @group image
+     */
+    // public function testUploadImageWithInDirectory()
+    // {
+    //     $file = UploadedFile::fake()->image('test.jpg');
+
+    //     $add_file_response = $this->json('GET', route('unisharp.lfm.upload'), [
+    //         'upload' => [$file]
+    //     ]);
+    //     $filename = json_decode($add_file_response->getContent())->filenames[0];
+    //     $thumb_filename = substr_replace($filename, '_S', strrpos($filename, '.'), 0);
+
+    //     $response->json('GET', route('unisharp.lfm.getDelete'), [
+    //         'items' => $filename
+    //     ]);
+
+    //     $response->assertStatus(200);
+
+    //     $file_path = $this->getStoragedFilePath($filename, $working_dir);
+    //     $thumb_file_path = $this->getStoragedFilePath($thumb_filename, $working_dir);
+    //     $this->assertFileNotExists($file_path);
+    //     $this->assertFileNotExists($thumb_file_path);
+    // }
 }
