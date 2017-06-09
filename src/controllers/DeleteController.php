@@ -1,8 +1,8 @@
 <?php namespace Unisharp\Laravelfilemanager\controllers;
 
+use Illuminate\Support\Facades\File;
 use Unisharp\Laravelfilemanager\Events\ImageIsDeleting;
 use Unisharp\Laravelfilemanager\Events\ImageWasDeleted;
-use Unisharp\FileApi\FileApi;
 
 /**
  * Class CropController
@@ -18,9 +18,9 @@ class DeleteController extends LfmController
     public function getDelete()
     {
         $name_to_delete = request('items');
-        $working_dir = parent::getCurrentPath();
-        $file_to_delete = $working_dir . DIRECTORY_SEPARATOR . $name_to_delete;
-        $fa = new FileApi($working_dir);
+
+        $file_to_delete = parent::getCurrentPath($name_to_delete);
+        $thumb_to_delete = parent::getThumbPath($name_to_delete);
 
         event(new ImageIsDeleting($file_to_delete));
 
@@ -28,21 +28,25 @@ class DeleteController extends LfmController
             return parent::error('folder-name');
         }
 
-        if (!$fa->exists($name_to_delete)) {
+        if (!File::exists($file_to_delete)) {
             return parent::error('folder-not-found', ['folder' => $file_to_delete]);
         }
 
-        if ($fa->isDirectory($name_to_delete)) {
-            if (!$fa->directoryIsEmpty($name_to_delete)) {
+        if (File::isDirectory($file_to_delete)) {
+            if (!parent::directoryIsEmpty($file_to_delete)) {
                 return parent::error('delete-folder');
             }
 
-            $fa->deleteDirectory($name_to_delete);
+            File::deleteDirectory($file_to_delete);
 
             return parent::$success_response;
         }
 
-        $fa->drop($name_to_delete);
+        if (parent::fileIsImage($file_to_delete)) {
+            File::delete($thumb_to_delete);
+        }
+
+        File::delete($file_to_delete);
 
         event(new ImageWasDeleted($file_to_delete));
 
