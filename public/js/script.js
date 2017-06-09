@@ -320,8 +320,8 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No editor found, open/download file using browser's default method
-    window.open(url);
+    // No WYSIWYG editor found, use custom method.
+    window.opener.SetUrl(url, file_path);
   }
 }
 //end useFile

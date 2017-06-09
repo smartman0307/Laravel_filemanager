@@ -17,6 +17,10 @@ return [
     // The url to this package. Change it if necessary.
     'prefix' => 'laravel-filemanager',
 
+    // The prefix of urls to non-public files, for exmaple if: base_directory !== 'public'
+    // Without slashes
+    'urls_prefix' => '',
+
     /*
     |--------------------------------------------------------------------------
     | Multi-User Mode
@@ -41,9 +45,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    // Which folder to store files in project, fill in 'public', 'resources', 'storage' and so on.
-    // You should create routes to serve images if it is not set to public.
-    'base_directory' => 'public',
+    // Which folder to store files in filesystem disk .
+    'base_directory' => 'laravel-filemanager',
 
     'images_folder_name' => 'photos',
     'files_folder_name'  => 'files',
@@ -72,7 +75,7 @@ return [
     'rename_file' => false,
 
     // If rename_file set to false and this set to true, then non-alphanumeric characters in filename will be replaced.
-    'alphanumeric_filename' => false,
+    'alphanumeric_filename' => true,
 
     // If true, non-alphanumeric folder name will be rejected.
     'alphanumeric_directory' => false,
