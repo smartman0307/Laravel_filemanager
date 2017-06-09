@@ -57,7 +57,6 @@ return [
     'btn-uploading'       => 'Uploaden...',
     'btn-close'           => 'Sluiten',
     'btn-crop'            => 'Bijsnijden',
-    'btn-copy-crop'       => 'Kopiëren & Bijsnijden',
     'btn-cancel'          => 'Annuleren',
     'btn-resize'          => 'Formaat aanpassen',
 
