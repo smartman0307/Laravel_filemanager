@@ -1,9 +1,10 @@
 <?php namespace Unisharp\Laravelfilemanager\controllers;
 
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Unisharp\Laravelfilemanager\Events\ImageIsUploading;
 use Unisharp\Laravelfilemanager\Events\ImageWasUploaded;
-use Unisharp\FileApi\FileApi;
 
 /**
  * Class UploadController
@@ -21,11 +22,9 @@ class UploadController extends LfmController
     {
         $files = request()->file('upload');
         $error_bag = [];
-        $new_filenames = [];
         foreach (is_array($files) ? $files : [$files] as $file) {
             $validation_message = $this->uploadValidator($file);
             $new_filename = $this->proceedSingleUpload($file);
-            $new_filenames[] = $new_filename;
 
             if ($validation_message !== 'pass') {
                 array_push($error_bag, $validation_message);
@@ -50,25 +49,25 @@ class UploadController extends LfmController
             return $validation_message;
         }
 
-        $working_dir = parent::getCurrentPath();
-        $new_filename = $this->getNewName($file);
-        $file_to_upload = $working_dir . DIRECTORY_SEPARATOR . $new_filename;
-        $fa = new FileApi($working_dir);
+        $new_filename  = $this->getNewName($file);
+        $new_file_path = parent::getCurrentPath($new_filename);
 
-        event(new ImageIsUploading($file_to_upload));
+        event(new ImageIsUploading($new_file_path));
         try {
             if (parent::fileIsImage($file) && !parent::imageShouldNotHaveThumb($file)) {
-                $new_filename = $fa
-                    ->thumbs([
-                        'S' => '96x96'
-                    ])->save($file, $new_filename);
+                Image::make($file->getRealPath())
+                    ->orientate() //Apply orientation from exif data
+                    ->save($new_file_path, 90);
+
+                $this->makeThumb($new_filename);
             } else {
-                $new_filename = $fa->save($file, $new_filename);
+                chmod($file->getRealPath(), 0644); // TODO configurable
+                File::move($file->getRealPath(), $new_file_path);
             }
         } catch (\Exception $e) {
             return parent::error('invalid');
         }
-        event(new ImageWasUploaded($file_to_upload));
+        event(new ImageWasUploaded(realpath($new_file_path)));
 
         return $new_filename;
     }
@@ -77,7 +76,6 @@ class UploadController extends LfmController
     {
         $is_valid = false;
         $force_invalid = false;
-        $fa = new FileApi(parent::getCurrentPath());
 
         if (empty($file)) {
             return parent::error('file-empty');
@@ -90,9 +88,9 @@ class UploadController extends LfmController
             return 'File failed to upload. Error code: ' . $file->getError();
         }
 
-        $new_filename = $this->getNewName($file) . '.' . $file->getClientOriginalExtension();
+        $new_filename = $this->getNewName($file);
 
-        if ($fa->exists($new_filename)) {
+        if (File::exists(parent::getCurrentPath($new_filename))) {
             return parent::error('file-exist');
         }
 
@@ -130,7 +128,18 @@ class UploadController extends LfmController
             $new_filename = preg_replace('/[^A-Za-z0-9\-\']/', '_', $new_filename);
         }
 
-        return $new_filename;
+        return $new_filename . '.' . $file->getClientOriginalExtension();
+    }
+
+    private function makeThumb($new_filename)
+    {
+        // create thumb folder
+        parent::createFolderByPath(parent::getThumbPath());
+
+        // create thumb image
+        Image::make(parent::getCurrentPath($new_filename))
+            ->fit(config('lfm.thumb_img_width', 200), config('lfm.thumb_img_height', 200))
+            ->save(parent::getThumbPath($new_filename));
     }
 
     private function useFile($new_filename)
