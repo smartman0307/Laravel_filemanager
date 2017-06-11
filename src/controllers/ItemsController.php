@@ -1,6 +1,6 @@
 <?php namespace Unisharp\Laravelfilemanager\controllers;
 
-use Illuminate\Support\Facades\File;
+use Unisharp\FileApi\FileApi;
 
 /**
  * Class ItemsController
@@ -18,8 +18,16 @@ class ItemsController extends LfmController
         $path = parent::getCurrentPath();
         $sort_type = request('sort_type');
 
-        $files = parent::sortFilesAndDirectories(parent::getFilesWithInfo($path), $sort_type);
-        $directories = parent::sortFilesAndDirectories(parent::getDirectories($path), $sort_type);
+        if ($sort_type == 'time') {
+            $key_to_sort = 'updated';
+        } elseif ($sort_type == 'alphabetic') {
+            $key_to_sort = 'name';
+        } else {
+            $key_to_sort = 'updated';
+        }
+
+        $files = parent::sortByColumn(parent::getFilesWithInfo($path), $sort_type);
+        $directories = parent::sortByColumn(parent::getDirectories($path), $sort_type);
 
         return [
             'html' => (string)view($this->getView())->with([

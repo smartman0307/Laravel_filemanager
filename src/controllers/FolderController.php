@@ -1,6 +1,6 @@
 <?php namespace Unisharp\Laravelfilemanager\controllers;
 
-use Illuminate\Support\Facades\File;
+use Unisharp\FileApi\FileApi;
 
 /**
  * Class FolderController
@@ -30,9 +30,7 @@ class FolderController extends LfmController
             $root_folder_path = parent::getRootFolderPath($folder_type);
 
             $children = parent::getDirectories($root_folder_path);
-            usort($children, function ($a, $b) {
-                return strcmp($a->name, $b->name);
-            });
+            $children = parent::sortByColumn($children, 'name');
 
             array_push($root_folders, (object)[
                 'name' => trans('laravel-filemanager::lfm.title-' . $lang_key),
@@ -56,16 +54,19 @@ class FolderController extends LfmController
     {
         $folder_name = parent::translateFromUtf8(trim(request('name')));
 
+        $working_dir = parent::getCurrentPath();
+        $fa = new FileApi($working_dir);
+
         $path = parent::getCurrentPath($folder_name);
 
         if (empty($folder_name)) {
             return parent::error('folder-name');
-        } elseif (File::exists($path)) {
+        } elseif ($fa->exists($folder_name)) {
             return parent::error('folder-exist');
         } elseif (config('lfm.alphanumeric_directory') && preg_match('/[^\w-]/i', $folder_name)) {
             return parent::error('folder-alnum');
         } else {
-            parent::createFolderByPath($path);
+            $fa->makeDirectory($folder_name);
             return parent::$success_response;
         }
     }
