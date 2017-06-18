@@ -1,9 +1,11 @@
-<?php
-
-namespace Unisharp\Laravelfilemanager\controllers;
+<?php namespace Unisharp\Laravelfilemanager\controllers;
 
 use Unisharp\Laravelfilemanager\traits\LfmHelpers;
 
+/**
+ * Class LfmController
+ * @package Unisharp\Laravelfilemanager\controllers
+ */
 class LfmController extends Controller
 {
     use LfmHelpers;
@@ -13,7 +15,6 @@ class LfmController extends Controller
     public function __construct()
     {
         $this->applyIniOverrides();
-        $this->initHelper();
     }
 
     /**

@@ -1,7 +1,11 @@
-<?php
+<?php namespace Unisharp\Laravelfilemanager\controllers;
 
-namespace Unisharp\Laravelfilemanager\controllers;
+use Illuminate\Support\Facades\File;
 
+/**
+ * Class ItemsController
+ * @package Unisharp\Laravelfilemanager\controllers
+ */
 class ItemsController extends LfmController
 {
     /**
@@ -11,24 +15,19 @@ class ItemsController extends LfmController
      */
     public function getItems()
     {
+        $path = parent::getCurrentPath();
         $sort_type = request('sort_type');
 
-        if ($sort_type == 'time') {
-            $key_to_sort = 'updated';
-        } elseif ($sort_type == 'alphabetic') {
-            $key_to_sort = 'name';
-        } else {
-            $key_to_sort = 'updated';
-        }
+        $files = parent::sortFilesAndDirectories(parent::getFilesWithInfo($path), $sort_type);
+        $directories = parent::sortFilesAndDirectories(parent::getDirectories($path), $sort_type);
 
         return [
             'html' => (string)view($this->getView())->with([
-                'items' => array_merge(
-                    parent::sortByColumn(parent::getDirectories(), $key_to_sort),
-                    parent::sortByColumn(parent::getFilesWithInfo(), $key_to_sort)
-                )
+                'files'       => $files,
+                'directories' => $directories,
+                'items'       => array_merge($directories, $files)
             ]),
-            'working_dir' => parent::getInternalPath(parent::getCurrentPath())
+            'working_dir' => parent::getInternalPath($path)
         ];
     }
 
