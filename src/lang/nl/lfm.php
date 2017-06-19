@@ -21,8 +21,8 @@ return [
     'title-panel'         => 'Laravel FileManager',
     'title-upload'        => 'Bestand uploaden',
     'title-view'          => 'Bestand bekijken',
-    'title-root'          => 'Bestanden',
-    'title-shares'        => 'Openbare map',
+    'title-user'          => 'Bestanden',
+    'title-share'         => 'Openbare map',
     'title-item'          => 'Item',
     'title-size'          => 'Grootte',
     'title-type'          => 'Type',
@@ -57,7 +57,6 @@ return [
     'btn-uploading'       => 'Uploaden...',
     'btn-close'           => 'Sluiten',
     'btn-crop'            => 'Bijsnijden',
-    'btn-copy-crop'       => 'Kopiëren & Bijsnijden',
     'btn-cancel'          => 'Annuleren',
     'btn-resize'          => 'Formaat aanpassen',
 

@@ -39,10 +39,8 @@ Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
         'uses' => 'FolderController@getAddfolder',
         'as' => 'getAddfolder'
     ]);
-    Route::get('/deletefolder', [
-        'uses' => 'FolderController@getDeletefolder',
-        'as' => 'getDeletefolder'
-    ]);
+
+    // list folders
     Route::get('/folders', [
         'uses' => 'FolderController@getFolders',
         'as' => 'getFolders'
@@ -55,10 +53,6 @@ Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
     ]);
     Route::get('/cropimage', [
         'uses' => 'CropController@getCropimage',
-        'as' => 'getCropimage'
-    ]);
-    Route::get('/cropnewimage', [
-        'uses' => 'CropController@getNewCropimage',
         'as' => 'getCropimage'
     ]);
 
@@ -91,12 +85,6 @@ Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
     ]);
 
     Route::get('/demo', 'DemoController@index');
-
-    // Get file when base_directory isn't public
-    $images_url = '/' . \Config::get('lfm.images_folder_name') . '/{base_path}/{image_name}';
-    $files_url = '/' . \Config::get('lfm.files_folder_name') . '/{base_path}/{file_name}';
-    Route::get($images_url, 'RedirectController@getImage')
-        ->where('image_name', '.*');
-    Route::get($files_url, 'RedirectController@getFIle')
-        ->where('file_name', '.*');
 });
+
+Route::get('/' . config('lfm.url_prefix') . '/' . config('lfm.images_folder_name') . '/{file_path}', $namespace . '\RedirectController@showFile')->where('file_path', '.*');

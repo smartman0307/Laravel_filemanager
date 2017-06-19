@@ -12,12 +12,13 @@
    * [Upgrade](http://unisharp.github.io/laravel-filemanager/upgrade)
  * Demo : [Laravel Filemanager container](https://github.com/UniSharp/laravel-filemanager-example-5.3)
 
-## v1.8 released
+## v1.7 released
  * Please follow the intructions in [upgrade document](https://unisharp.github.io/laravel-filemanager/upgrade).
  * Important changes :
-   * Fix Windows compatibility (utf-8 file names and folder names).
-   * New feature : Copy & Crop. Thanks [gwleuverink](https://github.com/gwleuverink).
-   * [Config ducoment](https://unisharp.github.io/laravel-filemanager/config) is refactored.
+   * All code refactored.
+   * Fix Windows compatibility.
+   * Fix file cannot be uploaded to "File Mode".
+   * Config file is also refactored, see [config document](https://unisharp.github.io/laravel-filemanager/config).
 
 ## Security
 
@@ -26,7 +27,8 @@ It is important to note that if you use your own routes **you must protect your 
 If, for example, you want to ensure that only logged in users have the ability to access the Laravel-Filemanager, simply wrap the routes in a group, perhaps like this:
 
 ```php
-Route::group(['before' => 'auth'], function () {
+Route::group(array('before' => 'auth'), function ()
+{
     Route::get('/laravel-filemanager', '\Unisharp\Laravelfilemanager\controllers\LfmController@show');
     Route::post('/laravel-filemanager/upload', '\Unisharp\Laravelfilemanager\controllers\LfmController@upload');
     // list all lfm routes here...

@@ -11,7 +11,9 @@ class MultiUser
 
     public function handle($request, Closure $next)
     {
-        if ($this->allowMultiUser()) {
+        $this->initHelper();
+
+        if ($this->allowFolderType('user')) {
             $previous_dir = $request->input('working_dir');
             $working_dir  = $this->rootFolder('user');
 
