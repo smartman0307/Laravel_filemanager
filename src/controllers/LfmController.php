@@ -1,11 +1,11 @@
-<?php
-
-namespace Unisharp\Laravelfilemanager\controllers;
+<?php namespace Unisharp\Laravelfilemanager\controllers;
 
 use Unisharp\Laravelfilemanager\traits\LfmHelpers;
-use Unisharp\Laravelfilemanager\LfmPath;
-use Unisharp\Laravelfilemanager\LfmFile;
 
+/**
+ * Class LfmController
+ * @package Unisharp\Laravelfilemanager\controllers
+ */
 class LfmController extends Controller
 {
     use LfmHelpers;
@@ -15,16 +15,6 @@ class LfmController extends Controller
     public function __construct()
     {
         $this->applyIniOverrides();
-        $this->initHelper();
-    }
-
-    public function __get($var_name)
-    {
-        if ($var_name == 'lfm') {
-            return new LfmPath;
-        }
-
-        return null;
     }
 
     /**
@@ -34,7 +24,6 @@ class LfmController extends Controller
      */
     public function show()
     {
-        // dd(app()::VERSION > "5.1.0");
         return view('laravel-filemanager::index');
     }
 

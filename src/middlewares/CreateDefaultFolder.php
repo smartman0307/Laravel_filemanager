@@ -11,7 +11,6 @@ class CreateDefaultFolder
 
     public function handle($request, Closure $next)
     {
-        $this->initHelper();
         $this->checkDefaultFolderExists('user');
         $this->checkDefaultFolderExists('share');
 
@@ -20,7 +19,11 @@ class CreateDefaultFolder
 
     private function checkDefaultFolderExists($type = 'share')
     {
-        if (!$this->allowFolderType($type)) {
+        if ($type === 'user' && !$this->allowMultiUser()) {
+            return;
+        }
+
+        if ($type === 'share' && !$this->allowShareFolder()) {
             return;
         }
 
