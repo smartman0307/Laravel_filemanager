@@ -18,8 +18,8 @@ return [
     'title-panel' => 'FileManager',
     'title-upload' => 'Datei hochladen',
     'title-view' => 'Datei ansehen',
-    'title-user' => 'Dateien',
-    'title-share'  => 'Gemeinsame Dateien',
+    'title-root' => 'Dateien',
+    'title-shares' => 'Gemeinsame Dateien',
     'title-item' => 'Item',
     'title-size' => 'Größe',
     'title-type' => 'Typ',
@@ -70,4 +70,3 @@ return [
     'resize-new-width' => 'Breite:',
     'locale-bootbox' => 'de',
 ];
-

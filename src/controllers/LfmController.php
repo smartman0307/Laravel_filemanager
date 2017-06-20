@@ -3,9 +3,10 @@
 namespace Unisharp\Laravelfilemanager\controllers;
 
 use Unisharp\Laravelfilemanager\traits\LfmHelpers;
-use Unisharp\Laravelfilemanager\LfmPath;
-use Unisharp\Laravelfilemanager\LfmFile;
 
+/**
+ * Class LfmController.
+ */
 class LfmController extends Controller
 {
     use LfmHelpers;
@@ -15,26 +16,15 @@ class LfmController extends Controller
     public function __construct()
     {
         $this->applyIniOverrides();
-        $this->initHelper();
-    }
-
-    public function __get($var_name)
-    {
-        if ($var_name == 'lfm') {
-            return new LfmPath;
-        }
-
-        return null;
     }
 
     /**
-     * Show the filemanager
+     * Show the filemanager.
      *
      * @return mixed
      */
     public function show()
     {
-        // dd(app()::VERSION > "5.1.0");
         return view('laravel-filemanager::index');
     }
 
@@ -50,7 +40,7 @@ class LfmController extends Controller
         $mine_config = 'lfm.valid_' . $type_key . '_mimetypes';
         $config_error = null;
 
-        if (!is_array(config($mine_config))) {
+        if (! is_array(config($mine_config))) {
             array_push($arr_errors, 'Config : ' . $mine_config . ' is not a valid array.');
         }
 
