@@ -1,7 +1,7 @@
 ## Requirements
  * php >= 5.4
  * exif extension
- * GD Library >=2.0 or Imagick PHP extension >=6.5.7
+ * gd OR imagick (choose one only)
  * Laravel 5
  * requires [intervention/image](https://github.com/Intervention/image) (to make thumbs, crop and resize images).
 
