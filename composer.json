@@ -42,16 +42,5 @@
       "Unisharp\\Laravelfilemanager\\": "src/"
     }
   },
-  "bin": ["bin/debug"],
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Unisharp\\Laravelfilemanager\\LaravelFilemanagerServiceProvider",
-        "Intervention\\Image\\ImageServiceProvider"
-      ],
-      "aliases": {
-        "Image": "Intervention\\Image\\Facades\\Image"
-      }
-    }
-  }
+  "bin": ["bin/debug"]
 }
