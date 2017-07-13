@@ -159,7 +159,13 @@ function displayErrorResponse(jqXHR) {
 
 function displaySuccessMessage(data){
   if(data == 'OK'){
-    notify('File Uploaded Successfully');
+    var success = $('<div>').addClass('alert alert-success')
+      .append($('<i>').addClass('fa fa-check'))
+      .append(' File Uploaded Successfully.');
+    $('#alerts').append(success);
+    setTimeout(function () {
+      success.remove();
+    }, 2000);
   }
 }
 
@@ -327,8 +333,8 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No WYSIWYG editor found, use custom method.
-    window.opener.SetUrl(url, file_path);
+    // No editor found, open/download file using browser's default method
+    window.open(url);
   }
 }
 //end useFile
