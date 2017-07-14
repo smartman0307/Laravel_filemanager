@@ -1,4 +1,4 @@
-@if((sizeof($files) > 0) || (sizeof($directories) > 0))
+@if(sizeof($items) > 0)
 <table class="table table-responsive table-condensed table-striped hidden-xs">
   <thead>
     <th style='width:50%;'>{{ Lang::get('laravel-filemanager::lfm.title-item') }}</th>
@@ -12,13 +12,13 @@
     <tr>
       <td>
         <i class="fa {{ $item->icon }}"></i>
-        <a class="{{ $item->is_file ? 'file' : 'folder'}}-item clickable" data-id="{{ $item->is_file ? $item->url : $item->path }}">
+        <a class="{{ $item->is_file ? 'file' : 'folder'}}-item clickable" data-id="{{ $item->path }}">
           {{ str_limit($item->name, $limit = 20, $end = '...') }}
         </a>
       </td>
       <td>{{ $item->size }}</td>
       <td>{{ $item->type }}</td>
-      <td>{{ $item->time }}</td>
+      <td>{{ date('Y-m-d h:m', $item->time) }}</td>
       <td>
         @if($item->is_file)
         <a href="javascript:trash('{{ $item->name }}')">
@@ -46,7 +46,7 @@
       <td>
         <div class="media" style="height: 70px;">
           <div class="media-left">
-            <div class="square {{ $item->is_file ? 'file' : 'folder'}}-item clickable"  data-id="{{ $item->is_file ? $item->url : $item->path }}">
+            <div class="square {{ $item->is_file ? 'file' : 'folder'}}-item clickable"  data-id="{{ $item->path }}">
               @if($item->thumb)
               <img src="{{ $item->thumb }}">
               @else
@@ -57,7 +57,7 @@
           <div class="media-body" style="padding-top: 10px;">
             <div class="media-heading">
               <p>
-                <a class="{{ $item->is_file ? 'file' : 'folder'}}-item clickable" data-id="{{ $item->is_file ? $item->url : $item->path }}">
+                <a class="{{ $item->is_file ? 'file' : 'folder'}}-item clickable" data-id="{{ $item->path }}">
                   {{ str_limit($item->name, $limit = 20, $end = '...') }}
                 </a>
                 &nbsp;&nbsp;
@@ -66,7 +66,7 @@
                 </a> --}}
               </p>
             </div>
-            <p style="color: #aaa;font-weight: 400">{{ $item->time }}</p>
+            <p style="color: #aaa;font-weight: 400">{{ date('Y-m-d h:m', $item->time) }}</p>
           </div>
         </div>
       </td>
@@ -76,5 +76,5 @@
 </table>
 
 @else
-<p>{{ trans('laravel-filemanager::lfm.message-empty') }}</p>
+@include('laravel-filemanager::empty')
 @endif

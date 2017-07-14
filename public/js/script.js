@@ -58,7 +58,6 @@ $('#upload-btn').click(function () {
     success: function (data, statusText, xhr, $form) {
       resetUploadForm();
       refreshFoldersAndItems(data);
-      displaySuccessMessage(data);
     },
     error: function (jqXHR, textStatus, errorThrown) {
       displayErrorResponse(jqXHR);
@@ -155,18 +154,6 @@ function performLfmRequest(url, parameter, type) {
 
 function displayErrorResponse(jqXHR) {
   notify('<div style="max-height:50vh;overflow: scroll;">' + jqXHR.responseText + '</div>');
-}
-
-function displaySuccessMessage(data){
-  if(data == 'OK'){
-    var success = $('<div>').addClass('alert alert-success')
-      .append($('<i>').addClass('fa fa-check'))
-      .append(' File Uploaded Successfully.');
-    $('#alerts').append(success);
-    setTimeout(function () {
-      success.remove();
-    }, 2000);
-  }
 }
 
 var refreshFoldersAndItems = function (data) {
@@ -333,8 +320,8 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No editor found, open/download file using browser's default method
-    window.open(url);
+    // No WYSIWYG editor found, use custom method.
+    window.opener.SetUrl(url, file_path);
   }
 }
 //end useFile
@@ -354,12 +341,12 @@ function notify(message) {
   bootbox.alert(message);
 }
 
-function fileView(file_url, timestamp) {
+function fileView(file_url) {
   bootbox.dialog({
     title: lang['title-view'],
     message: $('<img>')
       .addClass('img img-responsive center-block')
-      .attr('src', file_url + '?timestamp=' + timestamp),
+      .attr('src', file_url),
     size: 'large',
     onEscape: true,
     backdrop: true
