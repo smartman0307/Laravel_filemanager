@@ -25,16 +25,13 @@
   "require": {
     "php": ">=5.4.0",
     "ext-exif": "*",
-    "illuminate/config": ">=5.1.0",
-    "illuminate/filesystem": ">=5.1.0",
-    "illuminate/support": ">=5.1.0",
-    "intervention/image": "2.*",
-    "unisharp/laravel-fileapi": "1.*",
-    "illuminate/http": ">=5.1.0"
+    "illuminate/support": ">=4.2.0",
+    "intervention/image": "2.*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.2",
-    "mockery/mockery": "^0.9.9"
+    "orchestra/testbench": "~3.0",
+    "phpspec/phpspec": "~2.1",
+    "phpunit/phpunit": "~4.8"
   },
   "suggest": {
     "ext-gd": "to use GD library based image processing.",
@@ -42,13 +39,19 @@
   },
   "autoload": {
     "psr-4": {
-      "UniSharp\\LaravelFilemanager\\": "src/"
+      "Unisharp\\Laravelfilemanager\\": "src/"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-        "Tests\\": "tests"
+  "bin": ["bin/debug"],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Unisharp\\Laravelfilemanager\\LaravelFilemanagerServiceProvider",
+        "Intervention\\Image\\ImageServiceProvider"
+      ],
+      "aliases": {
+        "Image": "Intervention\\Image\\Facades\\Image"
+      }
     }
-  },
-  "bin": ["bin/debug"]
+  }
 }

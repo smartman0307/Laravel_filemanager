@@ -44,45 +44,38 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand hide" id="to-previous">
+            <a class="navbar-brand clickable hide" id="to-previous">
               <i class="fa fa-arrow-left"></i>
               <span class="hidden-xs">{{ trans('laravel-filemanager::lfm.nav-back') }}</span>
             </a>
-            <a class="navbar-brand visible-xs">{{ trans('laravel-filemanager::lfm.title-panel') }}</a>
+            <a class="navbar-brand visible-xs" href="#">{{ trans('laravel-filemanager::lfm.title-panel') }}</a>
           </div>
           <div class="collapse navbar-collapse" id="nav-buttons">
             <ul class="nav navbar-nav navbar-right">
-              <li id="loading" class="hide"><a><i class="fa fa-spinner fa-spin fa-2x"></i></a></li>
               <li>
-                <a id="multi_selection_toggle">
-                  <i class="fa fa-check-square"></i>
-                  <span>Multi selection</span>
-                </a>
-              </li>
-              <li>
-                <a id="thumbnail-display">
+                <a class="clickable" id="thumbnail-display">
                   <i class="fa fa-th-large"></i>
                   <span>{{ trans('laravel-filemanager::lfm.nav-thumbnails') }}</span>
                 </a>
               </li>
               <li>
-                <a id="list-display">
-                  <i class="fa fa-list-ul"></i>
+                <a class="clickable" id="list-display">
+                  <i class="fa fa-list"></i>
                   <span>{{ trans('laravel-filemanager::lfm.nav-list') }}</span>
                 </a>
               </li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                   {{ trans('laravel-filemanager::lfm.nav-sort') }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                   <li>
-                    <a id="list-sort-alphabetic">
+                    <a href="#" id="list-sort-alphabetic">
                       <i class="fa fa-sort-alpha-asc"></i> {{ trans('laravel-filemanager::lfm.nav-sort-alphabetic') }}
                     </a>
                   </li>
                   <li>
-                    <a id="list-sort-time">
+                    <a href="#" id="list-sort-time">
                       <i class="fa fa-sort-amount-asc"></i> {{ trans('laravel-filemanager::lfm.nav-sort-time') }}
                     </a>
                   </li>
@@ -100,15 +93,15 @@
 
       <ul id="fab">
         <li>
-          <a></a>
+          <a href="#"></a>
           <ul class="hide">
             <li>
-              <a id="add-folder" data-mfb-label="{{ trans('laravel-filemanager::lfm.nav-new') }}">
+              <a href="#" id="add-folder" data-mfb-label="{{ trans('laravel-filemanager::lfm.nav-new') }}">
                 <i class="fa fa-folder"></i>
               </a>
             </li>
             <li>
-              <a id="upload" data-mfb-label="{{ trans('laravel-filemanager::lfm.nav-upload') }}">
+              <a href="#" id="upload" data-mfb-label="{{ trans('laravel-filemanager::lfm.nav-upload') }}">
                 <i class="fa fa-upload"></i>
               </a>
             </li>
@@ -156,7 +149,7 @@
   <script src="{{ asset('vendor/laravel-filemanager/js/jquery.form.min.js') }}"></script>
   <script>
     var route_prefix = "{{ url('/') }}";
-    var lfm_route = "{{ url(config('lfm.url_prefix')) }}";
+    var lfm_route = "{{ url(config('lfm.prefix')) }}";
     var lang = {!! json_encode(trans('laravel-filemanager::lfm')) !!};
   </script>
   <script>{!! \File::get(base_path('vendor/unisharp/laravel-filemanager/public/js/script.js')) !!}</script>
