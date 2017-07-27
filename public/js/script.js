@@ -1,6 +1,5 @@
 var show_list;
 var sort_type = 'alphabetic';
-var multi_selection_enabled = true;
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
@@ -22,8 +21,8 @@ $(document).ready(function () {
 // ==  Navbar actions  ==
 // ======================
 
-$('#multi_selection_toggle').click(function () {
-  multi_selection_enabled = !multi_selection_enabled;
+$('#nav-buttons a').click(function (e) {
+  e.preventDefault();
 });
 
 $('#to-previous').click(function () {
@@ -59,6 +58,7 @@ $('#upload-btn').click(function () {
     success: function (data, statusText, xhr, $form) {
       resetUploadForm();
       refreshFoldersAndItems(data);
+      displaySuccessMessage(data);
     },
     error: function (jqXHR, textStatus, errorThrown) {
       displayErrorResponse(jqXHR);
@@ -69,13 +69,11 @@ $('#upload-btn').click(function () {
 
 $('#thumbnail-display').click(function () {
   show_list = 0;
-  $('#loading').removeClass('hide');
   loadItems();
 });
 
 $('#list-display').click(function () {
   show_list = 1;
-  $('#loading').removeClass('hide');
   loadItems();
 });
 
@@ -93,22 +91,12 @@ $('#list-sort-time').click(function() {
 // ==  Folder actions  ==
 // ======================
 
-$(document).on('click', '#grid a, #list a', function (e) {
-  var element = $(e.target).closest('a');
-
-  if (multi_selection_enabled) {
-    element.find('.square').toggleClass('selected');
-  } else {
-    if (element.data('type') == '0') {
-      goTo(element.data('path'));
-    } else {
-      useFile(element.data('path'));
-    }
-  }
+$(document).on('click', '.file-item', function (e) {
+  useFile($(this).data('id'));
 });
 
-$(document).on('click', '#tree a', function (e) {
-  goTo($(e.target).closest('a').data('path'));
+$(document).on('click', '.folder-item', function (e) {
+  goTo($(this).data('id'));
 });
 
 function goTo(new_dir) {
@@ -129,11 +117,11 @@ function dir_starts_with(str) {
 }
 
 function setOpenFolders() {
-  var folders = $('[data-type=0]');
+  var folders = $('.folder-item');
 
   for (var i = folders.length - 1; i >= 0; i--) {
     // close folders that are not parent
-    if (! dir_starts_with($(folders[i]).data('path'))) {
+    if (! dir_starts_with($(folders[i]).data('id'))) {
       $(folders[i]).children('i').removeClass('fa-folder-open').addClass('fa-folder');
     } else {
       $(folders[i]).children('i').removeClass('fa-folder').addClass('fa-folder-open');
@@ -169,6 +157,18 @@ function displayErrorResponse(jqXHR) {
   notify('<div style="max-height:50vh;overflow: scroll;">' + jqXHR.responseText + '</div>');
 }
 
+function displaySuccessMessage(data){
+  if(data == 'OK'){
+    var success = $('<div>').addClass('alert alert-success')
+      .append($('<i>').addClass('fa fa-check'))
+      .append(' File Uploaded Successfully.');
+    $('#alerts').append(success);
+    setTimeout(function () {
+      success.remove();
+    }, 2000);
+  }
+}
+
 var refreshFoldersAndItems = function (data) {
   loadFolders();
   if (data != 'OK') {
@@ -178,7 +178,7 @@ var refreshFoldersAndItems = function (data) {
 };
 
 var hideNavAndShowEditor = function (data) {
-  $('#nav-buttons > ul').addClass('hide');
+  $('#nav-buttons > ul').addClass('hidden');
   $('#content').html(data);
 }
 
@@ -195,7 +195,7 @@ function loadItems() {
     .done(function (data) {
       var response = JSON.parse(data);
       $('#content').html(response.html);
-      $('#nav-buttons > ul').removeClass('hide');
+      $('#nav-buttons > ul').removeClass('hidden');
       $('#working_dir').val(response.working_dir);
       $('#current_dir').text(response.working_dir);
       console.log('Current working_dir : ' + $('#working_dir').val());
@@ -205,7 +205,6 @@ function loadItems() {
         $('#to-previous').removeClass('hide');
       }
       setOpenFolders();
-      $('#loading').addClass('hide');
     });
 }
 
@@ -334,8 +333,8 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No WYSIWYG editor found, use custom method.
-    window.opener.SetUrl(url, file_path);
+    // No editor found, open/download file using browser's default method
+    window.open(url);
   }
 }
 //end useFile
@@ -355,12 +354,12 @@ function notify(message) {
   bootbox.alert(message);
 }
 
-function fileView(file_url) {
+function fileView(file_url, timestamp) {
   bootbox.dialog({
     title: lang['title-view'],
     message: $('<img>')
       .addClass('img img-responsive center-block')
-      .attr('src', file_url),
+      .attr('src', file_url + '?timestamp=' + timestamp),
     size: 'large',
     onEscape: true,
     backdrop: true
