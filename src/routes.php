@@ -1,12 +1,12 @@
 <?php
 
 $middleware = array_merge(\Config::get('lfm.middlewares'), [
-    '\UniSharp\LaravelFilemanager\middlewares\CreateDefaultFolder',
-    '\UniSharp\LaravelFilemanager\middlewares\MultiUser',
+    '\Unisharp\Laravelfilemanager\middlewares\MultiUser',
+    '\Unisharp\Laravelfilemanager\middlewares\CreateDefaultFolder',
 ]);
-$prefix = \Config::get('lfm.prefix', 'laravel-filemanager');
+$prefix = \Config::get('lfm.url_prefix', 'laravel-filemanager');
 $as = 'unisharp.lfm.';
-$namespace = '\UniSharp\LaravelFilemanager\controllers';
+$namespace = '\Unisharp\Laravelfilemanager\controllers';
 
 // make sure authenticated
 Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
@@ -40,8 +40,10 @@ Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
         'uses' => 'FolderController@getAddfolder',
         'as' => 'getAddfolder',
     ]);
-
-    // list folders
+    Route::get('/deletefolder', [
+        'uses' => 'FolderController@getDeletefolder',
+        'as' => 'getDeletefolder',
+    ]);
     Route::get('/folders', [
         'uses' => 'FolderController@getFolders',
         'as' => 'getFolders',
@@ -92,6 +94,12 @@ Route::group(compact('middleware', 'prefix', 'as', 'namespace'), function () {
     Route::get('/demo', 'DemoController@index');
 });
 
-if (app('\UniSharp\LaravelFilemanager\Lfm')->shouldSetStorageRoute()) {
-    Route::get('/' . config('lfm.images_folder_name') . '/{file_path}', $namespace . '\RedirectController@showFile')->where('file_path', '.*');
-}
+Route::group(compact('prefix', 'as', 'namespace'), function () {
+    // Get file when base_directory isn't public
+    $images_url = '/' . \Config::get('lfm.images_folder_name') . '/{base_path}/{image_name}';
+    $files_url = '/' . \Config::get('lfm.files_folder_name') . '/{base_path}/{file_name}';
+    Route::get($images_url, 'RedirectController@getImage')
+        ->where('image_name', '.*');
+    Route::get($files_url, 'RedirectController@getFile')
+        ->where('file_name', '.*');
+});
