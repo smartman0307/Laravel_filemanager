@@ -15,10 +15,6 @@ $(document).ready(function () {
         );
       }
     });
-
-    $(window).on('dragenter', function(){
-      $('#uploadModal').modal('show');
-    });
 });
 
 // ======================
