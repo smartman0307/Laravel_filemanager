@@ -15,10 +15,6 @@ $(document).ready(function () {
         );
       }
     });
-
-    $(window).on('dragenter', function(){
-      $('#uploadModal').modal('show');
-    });
 });
 
 // ======================
@@ -195,6 +191,7 @@ function loadFolders() {
 }
 
 function loadItems() {
+  $('#lfm-loader').show();
   performLfmRequest('jsonitems', {show_list: show_list, sort_type: sort_type}, 'html')
     .done(function (data) {
       var response = JSON.parse(data);
@@ -209,6 +206,9 @@ function loadItems() {
         $('#to-previous').removeClass('hide');
       }
       setOpenFolders();
+    })
+    .always(function(){
+      $('#lfm-loader').hide();
     });
 }
 
