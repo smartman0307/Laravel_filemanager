@@ -63,7 +63,7 @@ class UploadController extends LfmController
                 $this->makeThumb($new_filename);
             }
             {
-                chmod($file->getRealPath(), config('lfm.create_file_mode', 0644));
+                chmod($file->getRealPath(), 0644); // TODO configurable
                 File::move($file->getRealPath(), $new_file_path);
             }
         } catch (\Exception $e) {

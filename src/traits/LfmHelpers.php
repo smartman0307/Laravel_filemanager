@@ -257,7 +257,7 @@ trait LfmHelpers
      */
     private function removeDuplicateSlash($path)
     {
-        return preg_replace('/\\'.$this->ds.'{2,}/', $this->ds, $path);
+        return str_replace($this->ds . $this->ds, $this->ds, $path);
     }
 
     /**
@@ -493,7 +493,7 @@ trait LfmHelpers
     public function createFolderByPath($path)
     {
         if (! File::exists($path)) {
-            File::makeDirectory($path, config('lfm.create_folder_mode', 0755), true, true);
+            File::makeDirectory($path, 0777, true, true);
         }
     }
 
@@ -529,13 +529,10 @@ trait LfmHelpers
      */
     public function imageShouldNotHaveThumb($file)
     {
-        if (! config('lfm.should_create_thumbnails')) {
-            return true;
-        }
+        $mine_type = $this->getFileType($file);
+        $noThumbType = ['image/gif', 'image/svg+xml'];
 
-        $mime_type = $this->getFileType($file);
-
-        return ! in_array($mime_type, config('lfm.raster_mimetypes'));
+        return in_array($mine_type, $noThumbType);
     }
 
     /**
