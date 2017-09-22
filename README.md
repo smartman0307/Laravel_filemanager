@@ -17,7 +17,7 @@
  * Important changes :
    * Fix Windows compatibility (utf-8 file names and folder names).
    * New feature : Copy & Crop. Thanks [gwleuverink](https://github.com/gwleuverink).
-   * [Config document](https://unisharp.github.io/laravel-filemanager/config) is refactored.
+   * [Config ducoment](https://unisharp.github.io/laravel-filemanager/config) is refactored.
 
 ## Security
 
@@ -26,9 +26,9 @@ It is important to note that if you use your own routes **you must protect your 
 If, for example, you want to ensure that only logged in users have the ability to access the Laravel-Filemanager, simply wrap the routes in a group, perhaps like this:
 
 ```php
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['before' => 'auth'], function () {
     Route::get('/laravel-filemanager', '\Unisharp\Laravelfilemanager\controllers\LfmController@show');
-    Route::post('/laravel-filemanager/upload', '\Unisharp\Laravelfilemanager\controllers\UploadController@upload');
+    Route::post('/laravel-filemanager/upload', '\Unisharp\Laravelfilemanager\controllers\LfmController@upload');
     // list all lfm routes here...
 });
 ```
@@ -37,20 +37,11 @@ This approach ensures that only authenticated users have access to the Laravel-F
 
 **If you use the laravel-filemanager default route, make sure the `auth` middleware (set in config/lfm.php) is enabled and functional**.
 
-## v2.0 progress
-* [x] (done) Unit test
-* [ ] (done, need manual tests) Integrate with Laravel Storage
-* [ ] (in progress) Multiple selection
-* [ ] (in progress) Responsive design
-* [ ] (in progress) Config refactoring
-* [ ] JSON APIs
-* [ ] Move to folder function
 
-
-## Contributors & Credits
+## Credits
+Special thanks to
 
  * [All contibutors](https://github.com/UniSharp/laravel-filemanager/graphs/contributors) from GitHub. (issues / PR)
  * [@taswler](https://github.com/tsawler) the original author.
  * [@olivervogel](https://github.com/olivervogel) for the awesome [image library](https://github.com/Intervention/image).
- * All [@UniSharp](https://github.com/UniSharp) members, especially [Stream](https://github.com/g0110280), the lead maintainer.
- * SVG Loaders by [Sam](http://samherbert.net/svg-loaders/) (Licensed MIT)
+ * All [@UniSharp](https://github.com/UniSharp) members.

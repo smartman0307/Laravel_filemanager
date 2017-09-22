@@ -1,14 +1,11 @@
 <?php
 
-namespace Unisharp\Laravelfilemanager\controllers;
+namespace UniSharp\LaravelFilemanager\controllers;
 
 use Intervention\Image\Facades\Image;
-use Unisharp\Laravelfilemanager\Events\ImageIsCropping;
-use Unisharp\Laravelfilemanager\Events\ImageWasCropped;
+use UniSharp\LaravelFilemanager\Events\ImageIsCropping;
+use UniSharp\LaravelFilemanager\Events\ImageWasCropped;
 
-/**
- * Class CropController.
- */
 class CropController extends LfmController
 {
     /**
@@ -19,7 +16,7 @@ class CropController extends LfmController
     public function getCrop()
     {
         $working_dir = request('working_dir');
-        $img = parent::objectPresenter(parent::getCurrentPath(request('img')));
+        $img = $this->lfm->get(request('img'));
 
         return view('laravel-filemanager::crop')
             ->with(compact('working_dir', 'img'));
@@ -34,7 +31,7 @@ class CropController extends LfmController
         $dataY = request('dataY');
         $dataHeight = request('dataHeight');
         $dataWidth = request('dataWidth');
-        $image_path = parent::getCurrentPath(request('img'));
+        $image_path = $this->lfm->setName(request('img'))->path('absolute');
         $crop_path = $image_path;
 
         if (! $overWrite) {
@@ -49,16 +46,10 @@ class CropController extends LfmController
             ->crop($dataWidth, $dataHeight, $dataX, $dataY)
             ->save($crop_path);
 
-        if (config('lfm.should_create_thumbnails')) {
-            // create thumb folder
-            parent::createFolderByPath(parent::getThumbPath());
-
-            // make new thumbnail
-            Image::make($crop_path)
-                ->fit(config('lfm.thumb_img_width', 200), config('lfm.thumb_img_height', 200))
-                ->save(parent::getThumbPath(parent::getName($crop_path)));
-        }
-
+        // make new thumbnail
+        Image::make($crop_path)
+            ->fit(config('lfm.thumb_img_width', 200), config('lfm.thumb_img_height', 200))
+            ->save($this->lfm->thumb()->setName($this->helper->getNameFromPath($image_path))->path('absolute'));
         event(new ImageWasCropped($image_path));
     }
 

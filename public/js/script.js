@@ -1,5 +1,7 @@
 var show_list;
+var show_tree = false;
 var sort_type = 'alphabetic';
+var multi_selection_enabled = true;
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
@@ -15,18 +17,14 @@ $(document).ready(function () {
         );
       }
     });
-
-    $(window).on('dragenter', function(){
-      $('#uploadModal').modal('show');
-    });
 });
 
 // ======================
 // ==  Navbar actions  ==
 // ======================
 
-$('#nav-buttons a').click(function (e) {
-  e.preventDefault();
+$('#multi_selection_toggle').click(function () {
+  multi_selection_enabled = !multi_selection_enabled;
 });
 
 $('#to-previous').click(function () {
@@ -35,14 +33,28 @@ $('#to-previous').click(function () {
   goTo(previous_dir);
 });
 
-$('#add-folder').click(function () {
+$('#show_tree').click(function () {
+  $('#mobile_tree').animate({'left': '0px'}, 1000, 'easeOutExpo');
+  setTimeout(function () {
+    show_tree = true;
+  }, 1000);
+});
+
+$('.row').click(function () {
+  if (show_tree) {
+    $('#mobile_tree').animate({'left': '-300px'}, 1000, 'easeOutExpo');
+    show_tree = false;
+  }
+});
+
+$(document).on('click', '#add-folder', function () {
   bootbox.prompt(lang['message-name'], function (result) {
     if (result == null) return;
     createFolder(result);
   });
 });
 
-$('#upload').click(function () {
+$(document).on('click', '#upload', function () {
   $('#uploadModal').modal('show');
 });
 
@@ -62,7 +74,6 @@ $('#upload-btn').click(function () {
     success: function (data, statusText, xhr, $form) {
       resetUploadForm();
       refreshFoldersAndItems(data);
-      displaySuccessMessage(data);
     },
     error: function (jqXHR, textStatus, errorThrown) {
       displayErrorResponse(jqXHR);
@@ -71,13 +82,15 @@ $('#upload-btn').click(function () {
   });
 });
 
-$('#thumbnail-display').click(function () {
+$('#grid-display').click(function () {
   show_list = 0;
+  $('#loading').removeClass('hide');
   loadItems();
 });
 
 $('#list-display').click(function () {
   show_list = 1;
+  $('#loading').removeClass('hide');
   loadItems();
 });
 
@@ -95,12 +108,22 @@ $('#list-sort-time').click(function() {
 // ==  Folder actions  ==
 // ======================
 
-$(document).on('click', '.file-item', function (e) {
-  useFile($(this).data('id'));
+$(document).on('click', '#grid a, #list a', function (e) {
+  var element = $(e.target).closest('a');
+
+  if (multi_selection_enabled) {
+    element.find('.square').toggleClass('selected');
+  } else {
+    if (element.data('type') == '0') {
+      goTo(element.data('path'));
+    } else {
+      useFile(element.data('path'));
+    }
+  }
 });
 
-$(document).on('click', '.folder-item', function (e) {
-  goTo($(this).data('id'));
+$(document).on('click', '#tree a', function (e) {
+  goTo($(e.target).closest('a').data('path'));
 });
 
 function goTo(new_dir) {
@@ -121,11 +144,11 @@ function dir_starts_with(str) {
 }
 
 function setOpenFolders() {
-  var folders = $('.folder-item');
+  var folders = $('[data-type=0]');
 
   for (var i = folders.length - 1; i >= 0; i--) {
     // close folders that are not parent
-    if (! dir_starts_with($(folders[i]).data('id'))) {
+    if (! dir_starts_with($(folders[i]).data('path'))) {
       $(folders[i]).children('i').removeClass('fa-folder-open').addClass('fa-folder');
     } else {
       $(folders[i]).children('i').removeClass('fa-folder').addClass('fa-folder-open');
@@ -161,18 +184,6 @@ function displayErrorResponse(jqXHR) {
   notify('<div style="max-height:50vh;overflow: scroll;">' + jqXHR.responseText + '</div>');
 }
 
-function displaySuccessMessage(data){
-  if(data == 'OK'){
-    var success = $('<div>').addClass('alert alert-success')
-      .append($('<i>').addClass('fa fa-check'))
-      .append(' File Uploaded Successfully.');
-    $('#alerts').append(success);
-    setTimeout(function () {
-      success.remove();
-    }, 2000);
-  }
-}
-
 var refreshFoldersAndItems = function (data) {
   loadFolders();
   if (data != 'OK') {
@@ -182,7 +193,7 @@ var refreshFoldersAndItems = function (data) {
 };
 
 var hideNavAndShowEditor = function (data) {
-  $('#nav-buttons > ul').addClass('hidden');
+  $('#nav-buttons > ul').addClass('hide');
   $('#content').html(data);
 }
 
@@ -195,24 +206,21 @@ function loadFolders() {
 }
 
 function loadItems() {
-  $('#lfm-loader').show();
   performLfmRequest('jsonitems', {show_list: show_list, sort_type: sort_type}, 'html')
     .done(function (data) {
       var response = JSON.parse(data);
       $('#content').html(response.html);
-      $('#nav-buttons > ul').removeClass('hidden');
+      $('#nav-buttons > ul').removeClass('hide');
       $('#working_dir').val(response.working_dir);
       $('#current_dir').text(response.working_dir);
       console.log('Current working_dir : ' + $('#working_dir').val());
       if (getPreviousDir() == '') {
-        $('#to-previous').addClass('hide');
+        $('#to-previous').addClass('invisible');
       } else {
-        $('#to-previous').removeClass('hide');
+        $('#to-previous').removeClass('invisible');
       }
       setOpenFolders();
-    })
-    .always(function(){
-      $('#lfm-loader').hide();
+      $('#loading').addClass('hide');
     });
 }
 
@@ -341,8 +349,8 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No editor found, open/download file using browser's default method
-    window.open(url);
+    // No WYSIWYG editor found, use custom method.
+    window.opener.SetUrl(url, file_path);
   }
 }
 //end useFile
@@ -362,12 +370,12 @@ function notify(message) {
   bootbox.alert(message);
 }
 
-function fileView(file_url, timestamp) {
+function fileView(file_url) {
   bootbox.dialog({
     title: lang['title-view'],
     message: $('<img>')
       .addClass('img img-responsive center-block')
-      .attr('src', file_url + '?timestamp=' + timestamp),
+      .attr('src', file_url),
     size: 'large',
     onEscape: true,
     backdrop: true
