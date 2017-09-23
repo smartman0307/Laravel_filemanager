@@ -1,7 +1,10 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\controllers;
+namespace Unisharp\Laravelfilemanager\controllers;
 
+/**
+ * Class ItemsController.
+ */
 class ItemsController extends LfmController
 {
     /**
@@ -11,24 +14,19 @@ class ItemsController extends LfmController
      */
     public function getItems()
     {
+        $path = parent::getCurrentPath();
         $sort_type = request('sort_type');
 
-        if ($sort_type == 'time') {
-            $key_to_sort = 'updated';
-        } elseif ($sort_type == 'alphabetic') {
-            $key_to_sort = 'name';
-        } else {
-            $key_to_sort = 'updated';
-        }
+        $files = parent::sortFilesAndDirectories(parent::getFilesWithInfo($path), $sort_type);
+        $directories = parent::sortFilesAndDirectories(parent::getDirectories($path), $sort_type);
 
         return [
             'html' => (string) view($this->getView())->with([
-                'items' => array_merge(
-                    parent::sortByColumn($this->lfm->folders(), $key_to_sort),
-                    parent::sortByColumn($this->lfm->files(), $key_to_sort)
-                ),
+                'files'       => $files,
+                'directories' => $directories,
+                'items'       => array_merge($directories, $files),
             ]),
-            'working_dir' => $this->lfm->path('working_dir'),
+            'working_dir' => parent::getInternalPath($path),
         ];
     }
 
@@ -40,7 +38,7 @@ class ItemsController extends LfmController
         if ($show_list === '1') {
             $view_type = 'list';
         } elseif (is_null($show_list)) {
-            $type_key = $this->helper->currentLfmType();
+            $type_key = parent::currentLfmType();
             $startup_view = config('lfm.' . $type_key . 's_startup_view');
 
             if (in_array($startup_view, ['list', 'grid'])) {

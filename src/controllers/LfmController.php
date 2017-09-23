@@ -1,12 +1,12 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\controllers;
+namespace Unisharp\Laravelfilemanager\controllers;
 
-use UniSharp\LaravelFilemanager\Lfm;
-use UniSharp\LaravelFilemanager\LfmPath;
-use UniSharp\LaravelFilemanager\LfmStorage;
-use UniSharp\LaravelFilemanager\traits\LfmHelpers;
+use Unisharp\Laravelfilemanager\traits\LfmHelpers;
 
+/**
+ * Class LfmController.
+ */
 class LfmController extends Controller
 {
     use LfmHelpers;
@@ -18,15 +18,6 @@ class LfmController extends Controller
         $this->applyIniOverrides();
     }
 
-    public function __get($var_name)
-    {
-        if ($var_name == 'lfm') {
-            return app(LfmPath::class);
-        } elseif ($var_name == 'helper') {
-            return app(Lfm::class);
-        }
-    }
-
     /**
      * Show the filemanager.
      *
@@ -34,8 +25,6 @@ class LfmController extends Controller
      */
     public function show()
     {
-        // dd($this->lfm->files()[1]->hasThumb());
-        // dd(app()::VERSION > "5.1.0");
         return view('laravel-filemanager::index');
     }
 
@@ -47,7 +36,7 @@ class LfmController extends Controller
             array_push($arr_errors, trans('laravel-filemanager::lfm.message-extension_not_found'));
         }
 
-        $type_key = $this->helper->currentLfmType();
+        $type_key = $this->currentLfmType();
         $mine_config = 'lfm.valid_' . $type_key . '_mimetypes';
         $config_error = null;
 
