@@ -1,54 +1,68 @@
-@media screen and (max-width: 768px) {
-  #main {
-    padding: 0px;
-  }
-  #nav {
-    margin-bottom: -1px;
-  }
-  #content > .row {
-    margin: 0px;
-  }
+#tree {
+  border-right: 1px solid silver;
+  min-height: calc(100vh - 72px - 20px);
 }
 
-@media screen and (min-width: 768px) {
-  #main {
-    border-left: 1px solid silver;
-  }
+#mobile_tree {
+  background-color: #f9f9f9;
+  position: absolute;
+  z-index:999;
+  width: 300px;
+  left: -300px;
+  /*left: 0px;*/
+  height: 100vh;
 }
 
-#wrapper {
-  padding: 0px;
+#nav {
+  border: none;
+  border-radius: 0px;
+  background-color: #75C7C3;
 }
 
-#wrapper > .panel {
-  border-radius: 0;
+#nav a {
+  color: white;
 }
 
-#wrapper > .panel > .panel-heading {
-  border-radius: 0;
+#nav .navbar-toggle {
+  border: none;
+  padding: 10px;
+  margin: 0;
 }
 
-#wrapper > .panel > .panel-heading > .panel-title {
-  padding: 10px 0;
-}
-
-#wrapper > .row {
-  margin: 0px;
+#nav .navbar-toggle:hover {
+  background: none;
 }
 
 #fab a:hover, #fab a:focus{
   color: white;
 }
 
-.item_name {
-  width: 120px;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow: ellipsis;
+.invisible {
+  opacity: 0;
 }
 
-.clickable {
+a, .square {
   cursor: pointer;
+  text-decoration: none !important;
+}
+
+.square i {
+  color: #333;
+}
+
+#grid .square.selected {
+  border: 5px solid green;
+  padding-bottom: calc(100% - 10px + 2px);
+}
+#grid .square.selected > img {
+  padding: 1px;
+}
+
+#list .square.selected {
+  border: 4px solid green;
+}
+#list .square.selected > img {
+  padding: 1px;
 }
 
 .img-preview {
@@ -59,91 +73,85 @@
   height: 200px;
 }
 
-.hidden {
-  display: none;
+#grid .square {
+  width: 100%;
+  border: 1px solid rgb(221, 221, 221);
+  border-radius: 3px;
+  padding-bottom: 100%;
+}
+
+#list .square {
+  min-width: 70px;
+  height: 70px;
+  margin-right: 10px;
 }
 
 .square {
-  width: 100%;
-  padding-bottom: 100%;
   position: relative;
-  border: 1px solid rgb(221, 221, 221);
-  border-radius: 3px;
-  // max-width: 210px;
-  max-height: 210px;
+  display: inline-block;
+  overflow: hidden;
 }
-.visible-xs .square {
-  width: 60px;
-}
+
 .square > img {
   padding: 5px;
   position: absolute;
+  display: block;
+  top:0%;
+  left:0%;
+  min-height: 100%;
+  min-width: 100%;
   max-width: 100%;
-  max-height: 100%;
-  margin: 0 auto;
-  display: inline-block;
-  vertical-align: middle;
 }
-.square > i {
+#grid .square > i {
   font-size: 80px;
-  padding: 5px;
   position: absolute;
   top: calc(50% - 40px);
-  left: calc(50% - 40px);
+  left: calc(50% - 40px + 5px);
 }
-.visible-xs .square > i {
+#list .square > i {
   font-size: 50px;
-  padding: 0px auto;
-  padding-top: 5px;
+  position: absolute;
   top: calc(50% - 25px);
-  left: calc(50% - 25px);
+  left: calc(50% - 20px);
 }
 
-.caption {
-  margin-top: 10px;
+#grid .item_name {
   margin-bottom: 20px;
-}
-.caption > .btn-group {
-  width: 100%;
-}
-.caption > .btn-group > .item_name {
-  width: calc(100% - 25px);
-}
-.caption > .btn-group > .dropdown-toggle {
-  width: 25px;
-}
-
-#lfm-loader{
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: gray;
-  opacity: 0.7;
-  z-index: 9999;
+  border: 1px solid rgb(221, 221, 221);
+  border-top: none;
+  margin-top: -7px;
+  padding: 10px;
   text-align: center;
 }
-#lfm-loader:before {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-#lfm-loader img{
-  width: 100px;
-  margin: 0 auto;
-  display: inline-block;
-  vertical-align: middle;
+
+#list .item_name {
+  padding: 15px 0 5px;
 }
 
-.table-list-view{
-  margin-bottom: 120px;
+.item_name {
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
 }
-.table-list-view .actions{
-  text-align: right;
+
+time {
+  color: #aaa;
+  font-weight: 400;
 }
-.table-list-view .actions a:hover{
-  text-decoration: none;
+
+#grid time {
+  display: none;
+}
+
+#list > li {
+  height: 80px;
+  border-top: 1px solid #ddd;
+  padding: 5px 0 !important;
+  margin-top: 0px;
+}
+
+#list > li > a {
+  display: flex;
+  flex-direction: row;
 }
