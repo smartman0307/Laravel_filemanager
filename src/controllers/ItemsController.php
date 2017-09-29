@@ -1,7 +1,10 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\controllers;
+namespace Unisharp\Laravelfilemanager\controllers;
 
+/**
+ * Class ItemsController.
+ */
 class ItemsController extends LfmController
 {
     /**
@@ -11,36 +14,38 @@ class ItemsController extends LfmController
      */
     public function getItems()
     {
-        if (request('sort_type') == 'alphabetic') {
-            $key_to_sort = 'name';
-        } else {
-            $key_to_sort = 'time';
-        }
+        $path = parent::getCurrentPath();
+        $sort_type = request('sort_type');
+
+        $files = parent::sortFilesAndDirectories(parent::getFilesWithInfo($path), $sort_type);
+        $directories = parent::sortFilesAndDirectories(parent::getDirectories($path), $sort_type);
 
         return [
-            'html' => (string) view('laravel-filemanager::items')->with([
-                'items' => array_merge(
-                    parent::sortByColumn($this->lfm->folders(), $key_to_sort),
-                    parent::sortByColumn($this->lfm->files(), $key_to_sort)
-                ),
-                'display' => $this->getDisplayType(),
+            'html' => (string) view($this->getView())->with([
+                'files'       => $files,
+                'directories' => $directories,
+                'items'       => array_merge($directories, $files),
             ]),
-            'working_dir' => $this->lfm->path('working_dir'),
+            'working_dir' => parent::getInternalPath($path),
         ];
     }
 
-    private function getDisplayType()
+    private function getView()
     {
-        $type_key = $this->helper->currentLfmType();
-        $startup_view = config('lfm.' . $type_key . 's_startup_view');
-
         $view_type = 'grid';
-        $target_display_type = request('show_list') ?: $startup_view;
+        $show_list = request('show_list');
 
-        if (in_array($target_display_type, ['list', 'grid'])) {
-            $view_type = $target_display_type;
+        if ($show_list === '1') {
+            $view_type = 'list';
+        } elseif (is_null($show_list)) {
+            $type_key = parent::currentLfmType();
+            $startup_view = config('lfm.' . $type_key . 's_startup_view');
+
+            if (in_array($startup_view, ['list', 'grid'])) {
+                $view_type = $startup_view;
+            }
         }
 
-        return $view_type;
+        return 'laravel-filemanager::' . $view_type . '-view';
     }
 }

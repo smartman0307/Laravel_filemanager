@@ -1,6 +1,6 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\Events;
+namespace Unisharp\Laravelfilemanager\Events;
 
 class FolderIsRenaming
 {
