@@ -8,9 +8,7 @@
     <?php $thumb_src = $item->thumb; ?>
     <?php $item_path = $item->is_file ? $item->url : $item->path; ?>
 
-    <div class="square clickable {{ $item->is_file ? '' : 'folder-item' }}" data-id="{{ $item_path }}"
-           @if($item->is_file && $thumb_src) onclick="fileView('{{ $item_path }}', '{{ $item->updated }}')"
-           @elseif($item->is_file) onclick="download('{{ $item_name }}')" @endif >
+    <div class="square clickable {{ $item->is_file ? 'file' : 'folder'}}-item" data-id="{{ $item_path }}">
       @if($thumb_src)
       <img src="{{ $thumb_src }}">
       @else
@@ -20,10 +18,7 @@
 
     <div class="caption text-center">
       <div class="btn-group">
-        <button type="button" data-id="{{ $item_path }}"
-                class="item_name btn btn-default btn-xs {{ $item->is_file ? '' : 'folder-item'}}"
-                @if($item->is_file && $thumb_src) onclick="fileView('{{ $item_path }}', '{{ $item->updated }}')"
-                @elseif($item->is_file) onclick="download('{{ $item_name }}')" @endif >
+        <button type="button" data-id="{{ $item_path }}" class="item_name btn btn-default btn-xs {{ $item->is_file ? 'file' : 'folder'}}-item">
           {{ $item_name }}
         </button>
         <button type="button" class="btn btn-default dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">
