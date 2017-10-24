@@ -60,9 +60,11 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Unisharp\\Laravelfilemanager\\LaravelFilemanagerServiceProvider"
+        "Unisharp\\Laravelfilemanager\\LaravelFilemanagerServiceProvider",
+        "Intervention\\Image\\ImageServiceProvider"
       ],
       "aliases": {
+        "Image": "Intervention\\Image\\Facades\\Image"
       }
     }
   }
