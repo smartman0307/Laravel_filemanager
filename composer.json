@@ -25,14 +25,17 @@
   "require": {
     "php": ">=5.4.0",
     "ext-exif": "*",
-    "ext-fileinfo": "*",
-    "illuminate/support": ">=4.2.0",
-    "intervention/image": "2.*"
+    "illuminate/config": ">=5.1.0",
+    "illuminate/filesystem": ">=5.1.0",
+    "illuminate/support": ">=5.1.0",
+    "intervention/image": "2.*",
+    "unisharp/laravel-fileapi": "1.*",
+    "illuminate/http": ">=5.1.0",
+    "illuminate/container": "^5.4"
   },
   "require-dev": {
-    "orchestra/testbench": "~3.0",
-    "phpspec/phpspec": "~2.1",
-    "phpunit/phpunit": "~4.8"
+    "phpunit/phpunit": "^6.2",
+    "mockery/mockery": "^0.9.9"
   },
   "suggest": {
     "ext-gd": "to use GD library based image processing.",
@@ -40,30 +43,13 @@
   },
   "autoload": {
     "psr-4": {
-      "Unisharp\\Laravelfilemanager\\": "src/"
+      "UniSharp\\LaravelFilemanager\\": "src/"
     }
   },
-  "bin": ["bin/debug"],
-  "scripts": {
-    "post-install-cmd": [
-      "php artisan vendor:publish --tag=lfm_config",
-      "php artisan vendor:publish --tag=lfm_public",
-      "php artisan route:clear",
-      "php aritsan config:clear"
-    ],
-    "post-update-cmd": [
-      "php artisan vendor:publish --tag=lfm_public --force",
-      "php artisan route:clear",
-      "php aritsan config:clear"
-    ]
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Unisharp\\Laravelfilemanager\\LaravelFilemanagerServiceProvider"
-      ],
-      "aliases": {
-      }
+  "autoload-dev": {
+    "psr-4": {
+        "Tests\\": "tests"
     }
-  }
+  },
+  "bin": ["bin/debug"]
 }
