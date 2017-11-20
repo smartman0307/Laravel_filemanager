@@ -1,14 +1,11 @@
 <?php
 
-namespace Unisharp\Laravelfilemanager\controllers;
+namespace UniSharp\LaravelFilemanager\controllers;
 
 use Intervention\Image\Facades\Image;
-use Unisharp\Laravelfilemanager\Events\ImageIsResizing;
-use Unisharp\Laravelfilemanager\Events\ImageWasResized;
+use UniSharp\LaravelFilemanager\Events\ImageIsResizing;
+use UniSharp\LaravelFilemanager\Events\ImageWasResized;
 
-/**
- * Class ResizeController.
- */
 class ResizeController extends LfmController
 {
     /**
@@ -21,13 +18,12 @@ class ResizeController extends LfmController
         $ratio = 1.0;
         $image = request('img');
 
-        $original_image = Image::make(parent::getCurrentPath($image));
+        $original_image = Image::make($this->lfm->setName($image)->path('absolute'));
         $original_width = $original_image->width();
         $original_height = $original_image->height();
 
         $scaled = false;
 
-        // FIXME size should be configurable
         if ($original_width > 600) {
             $ratio = 600 / $original_width;
             $width = $original_width * $ratio;
@@ -46,7 +42,7 @@ class ResizeController extends LfmController
         }
 
         return view('laravel-filemanager::resize')
-            ->with('img', parent::objectPresenter(parent::getCurrentPath($image)))
+            ->with('img', $this->lfm->get($image))
             ->with('height', number_format($height, 0))
             ->with('width', $width)
             ->with('original_height', $original_height)
@@ -61,7 +57,7 @@ class ResizeController extends LfmController
         $dataY = request('dataY');
         $height = request('dataHeight');
         $width = request('dataWidth');
-        $image_path = parent::getCurrentPath(request('img'));
+        $image_path = $this->lfm->setName(request('img'))->path('absolute');
 
         event(new ImageIsResizing($image_path));
         Image::make($image_path)->resize($width, $height)->save();
