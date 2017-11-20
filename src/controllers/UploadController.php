@@ -39,13 +39,13 @@ class UploadController extends LfmController
                 return $this->errors;
             }
 
-            $filename = $this->proceedSingleUpload($file);
-            if ($filename === false) {
+            if (!$this->proceedSingleUpload($file)) {
                 return $this->errors;
             }
 
             // upload via ckeditor 'Upload' tab
-            return $this->useFile($filename);
+            $new_filename = $this->getNewName($file);
+            return $this->useFile($new_filename);
         }
 
 
@@ -97,7 +97,7 @@ class UploadController extends LfmController
         // TODO should be "FileWasUploaded"
         event(new ImageWasUploaded(realpath($new_file_path)));
 
-        return $new_filename;
+        return true;
     }
 
     private function fileIsValid($file)
@@ -188,6 +188,15 @@ class UploadController extends LfmController
     private function useFile($new_filename)
     {
         $file = parent::getFileUrl($new_filename);
+
+        $responseType=request()->input('responseType');
+        if ($responseType && $responseType=='json'){
+            return [
+                "uploaded"=> 1,
+                "fileName"=> $new_filename,
+                "url"=> $file,
+            ];
+        }
 
         return "<script type='text/javascript'>
 
