@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-8" id="containment">
-    <img id="resize" src="{{ $img->url . '?timestamp=' . $img->updated }}" height="{{ $height }}" width="{{ $width }}">
+    <img id="resize" src="{{ $img->path . '?timestamp=' . $img->time }}" height="{{ $height }}" width="{{ $width }}">
   </div>
   <div class="col-md-4">
 
@@ -46,8 +46,8 @@
     <input type="hidden" name="scaled" value="{{ $scaled }}"><br>
     <input type="hidden" id="original_height" name="original_height" value="{{ $original_height }}"><br>
     <input type="hidden" id="original_width" name="original_width" value="{{ $original_width }}"><br>
-    <input type="hidden" id="height" name="height" value="{{ $height }}"><br>
-    <input type="hidden" id="width" name="width" value="{{ $width }}">
+    <input type="hidden" id="height" name="height" value=""><br>
+    <input type="hidden" id="width" name="width">
 
   </div>
 </div>

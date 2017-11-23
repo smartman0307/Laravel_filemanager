@@ -1,23 +1,96 @@
 var show_list;
+var show_tree = false;
 var sort_type = 'alphabetic';
+var multi_selection_enabled = true;
+var selected = [];
+var items = [];
+
+$.fn.fab = function (options) {
+  var menu = this;
+  menu.addClass('mfb-component--br mfb-zoomin').attr('data-mfb-toggle', 'hover');
+
+  var wrapper = $('<li>').addClass('mfb-component__wrap');
+  menu.append(wrapper);
+
+  var parent_button = $('<a>');
+  parent_button.addClass('mfb-component__button--main')
+    .append($('<i>').addClass('mfb-component__main-icon--resting fa fa-plus'))
+    .append($('<i>').addClass('mfb-component__main-icon--active fa fa-times'));
+  wrapper.append(parent_button);
+
+  var children_list = $('<ul>');
+  wrapper.append(children_list);
+
+  options.buttons.forEach(function (button) {
+    children_list.append(
+      $('<li>').append(
+        $('<a>').addClass('mfb-component__button--child')
+          .attr('data-mfb-label', button.label)
+          .attr('id', button.attrs.id)
+          .append(
+            $('<i>').addClass('mfb-component__child-icon')
+              .addClass(button.icon)
+        )
+      )
+    );
+  });
+
+  children_list.addClass('mfb-component__list');
+};
+
+Array.prototype.toggleElement = function (element) {
+  var element_index = this.indexOf(element);
+  if (element_index === -1) {
+    this.push(element);
+  } else {
+    this.splice(element_index, 1);
+  }
+};
 
 $(document).ready(function () {
   bootbox.setDefaults({locale:lang['locale-bootbox']});
+  $('#fab').fab({
+    buttons: [
+      {
+        icon: 'fa fa-folder',
+        label: lang['nav-new'],
+        attrs: {id: 'add-folder'}
+      },
+      {
+        icon: 'fa fa-upload',
+        label: lang['nav-upload'],
+        attrs: {id: 'upload'}
+      }
+    ]
+  });
+
+  actions.reverse().forEach(function (action) {
+    $('#nav-buttons #loading').after(
+      $('<li>').addClass('nav-item').append(
+        $('<a>').addClass('nav-link d-none').attr('data-action', action.name)
+          .append($('<i>').addClass('fa fa-fw fa-' + action.icon))
+          .append($('<span>').text(action.label))
+      )
+    );
+  });
+
+  sortings.forEach(function (sort) {
+    $('#nav-buttons .dropdown-menu').append(
+      $('<a>').addClass('dropdown-item').attr('data-sortby', sort.by)
+        .append($('<i>').addClass('fa fa-fw fa-' + sort.icon))
+        .append($('<span>').text(sort.label))
+    );
+  });
   loadFolders();
   performLfmRequest('errors')
-    .done(function (data) {
-      var response = JSON.parse(data);
-      for (var i = 0; i < response.length; i++) {
+    .done(function (response) {
+      JSON.parse(response).forEach(function (message) {
         $('#alerts').append(
           $('<div>').addClass('alert alert-warning')
             .append($('<i>').addClass('fa fa-exclamation-circle'))
-            .append(' ' + response[i])
+            .append(' ' + message)
         );
-      }
-    });
-
-    $(window).on('dragenter', function(){
-      $('#uploadModal').modal('show');
+      });
     });
 });
 
@@ -25,8 +98,8 @@ $(document).ready(function () {
 // ==  Navbar actions  ==
 // ======================
 
-$('#nav-buttons a').click(function (e) {
-  e.preventDefault();
+$('#multi_selection_toggle').click(function () {
+  multi_selection_enabled = !multi_selection_enabled;
 });
 
 $('#to-previous').click(function () {
@@ -35,14 +108,28 @@ $('#to-previous').click(function () {
   goTo(previous_dir);
 });
 
-$('#add-folder').click(function () {
+$('#show_tree').click(function () {
+  $('#mobile_tree').animate({'left': '0px'}, 1000, 'easeOutExpo');
+  setTimeout(function () {
+    show_tree = true;
+  }, 1000);
+});
+
+$('.row').click(function () {
+  if (show_tree) {
+    $('#mobile_tree').animate({'left': '-' + $('#mobile_tree').width() + 'px'}, 1000, 'easeOutExpo');
+    show_tree = false;
+  }
+});
+
+$(document).on('click', '#add-folder', function () {
   bootbox.prompt(lang['message-name'], function (result) {
     if (result == null) return;
     createFolder(result);
   });
 });
 
-$('#upload').click(function () {
+$(document).on('click', '#upload', function () {
   $('#uploadModal').modal('show');
 });
 
@@ -62,7 +149,6 @@ $('#upload-btn').click(function () {
     success: function (data, statusText, xhr, $form) {
       resetUploadForm();
       refreshFoldersAndItems(data);
-      displaySuccessMessage(data);
     },
     error: function (jqXHR, textStatus, errorThrown) {
       displayErrorResponse(jqXHR);
@@ -71,36 +157,80 @@ $('#upload-btn').click(function () {
   });
 });
 
-$('#thumbnail-display').click(function () {
-  show_list = 0;
+$(document).on('click', '[data-display]', function() {
+  show_list = $(this).data('display');
+  console.log(show_list);
   loadItems();
 });
 
-$('#list-display').click(function () {
-  show_list = 1;
+$(document).on('click', '[data-sortby]', function() {
+  sort_type = $(this).data('sortby');
   loadItems();
 });
 
-$('#list-sort-alphabetic').click(function() {
-  sort_type = 'alphabetic';
-  loadItems();
-});
-
-$('#list-sort-time').click(function() {
-  sort_type = 'time';
-  loadItems();
+$(document).on('click', '[data-action]', function () {
+  console.log($(this).data('action'));
+  window[$(this).data('action')](getOneSelectedElement());
 });
 
 // ======================
 // ==  Folder actions  ==
 // ======================
 
-$(document).on('click', '.file-item', function (e) {
-  useFile($(this).data('id'));
+$(document).on('click', '#content a', function (e) {
+  var element = $(e.target).closest('a');
+
+  if (multi_selection_enabled) {
+    selected.toggleElement(element.data('id'));
+    element.find('.square').toggleClass('selected');
+    toggleActions();
+  } else {
+    if (element.is_file) {
+      useFile(getOneSelectedElement().path);
+    } else {
+      goTo(getOneSelectedElement().path);
+    }
+  }
 });
 
-$(document).on('click', '.folder-item', function (e) {
-  goTo($(this).data('id'));
+function getOneSelectedElement(item_id) {
+  if (item_id === undefined) {
+    item_id = selected[0];
+  }
+  return items[item_id];
+}
+
+function getSelectedItems() {
+  var arr_objects = [];
+  selected.forEach(function (id, index) {
+    arr_objects.push(getOneSelectedElement(id));
+  });
+  return arr_objects;
+}
+
+function toggleActions() {
+  var one_selected = selected.length === 1;
+  var many_selected = selected.length >= 1;
+  var only_image = getSelectedItems()
+    .filter(function (item) { return !item.is_image; })
+    .length === 0;
+  var only_file = getSelectedItems()
+    .filter(function (item) { return !item.is_file; })
+    .length === 0;
+
+  $('[data-action=use]').toggleClass('d-none', !(many_selected && only_file))
+  $('[data-action=rename]').toggleClass('d-none', !one_selected)
+  $('[data-action=preview]').toggleClass('d-none', !(one_selected && only_image))
+  $('[data-action=move]').toggleClass('d-none', !(many_selected))
+  $('[data-action=download]').toggleClass('d-none', !(many_selected && only_file))
+  $('[data-action=resize]').toggleClass('d-none', !(one_selected && only_image))
+  $('[data-action=crop]').toggleClass('d-none', !(one_selected && only_image))
+  $('[data-action=trash]').toggleClass('d-none', !many_selected)
+  $('#fab').toggleClass('d-none', selected.length !== 0)
+}
+
+$(document).on('click', '#tree a', function (e) {
+  goTo($(e.target).closest('a').data('path'));
 });
 
 function goTo(new_dir) {
@@ -111,26 +241,17 @@ function goTo(new_dir) {
 function getPreviousDir() {
   var ds = '/';
   var working_dir = $('#working_dir').val();
-  var last_ds = working_dir.lastIndexOf(ds);
-  var previous_dir = working_dir.substring(0, last_ds);
-  return previous_dir;
-}
-
-function dir_starts_with(str) {
-  return $('#working_dir').val().indexOf(str) === 0;
+  return working_dir.substring(0, working_dir.lastIndexOf(ds));
 }
 
 function setOpenFolders() {
-  var folders = $('.folder-item');
-
-  for (var i = folders.length - 1; i >= 0; i--) {
+  $('[data-type=0]').each(function (index, folder) {
     // close folders that are not parent
-    if (! dir_starts_with($(folders[i]).data('id'))) {
-      $(folders[i]).children('i').removeClass('fa-folder-open').addClass('fa-folder');
-    } else {
-      $(folders[i]).children('i').removeClass('fa-folder').addClass('fa-folder-open');
-    }
-  }
+    var should_open = ($('#working_dir').val() + '/').startsWith($(folder).data('path') + '/');
+    $(folder).children('i')
+      .toggleClass('fa-folder-open', should_open)
+      .toggleClass('fa-folder', !should_open);
+  });
 }
 
 // ====================
@@ -161,18 +282,6 @@ function displayErrorResponse(jqXHR) {
   notify('<div style="max-height:50vh;overflow: scroll;">' + jqXHR.responseText + '</div>');
 }
 
-function displaySuccessMessage(data){
-  if(data == 'OK'){
-    var success = $('<div>').addClass('alert alert-success')
-      .append($('<i>').addClass('fa fa-check'))
-      .append(' File Uploaded Successfully.');
-    $('#alerts').append(success);
-    setTimeout(function () {
-      success.remove();
-    }, 2000);
-  }
-}
-
 var refreshFoldersAndItems = function (data) {
   loadFolders();
   if (data != 'OK') {
@@ -182,8 +291,9 @@ var refreshFoldersAndItems = function (data) {
 };
 
 var hideNavAndShowEditor = function (data) {
-  $('#nav-buttons > ul').addClass('hidden');
-  $('#content').html(data);
+  $('#nav-buttons > ul').addClass('d-none');
+  $('#editor').removeClass('d-none').html(data);
+  $('#content').addClass('d-none');
 }
 
 function loadFolders() {
@@ -195,24 +305,44 @@ function loadFolders() {
 }
 
 function loadItems() {
-  $('#lfm-loader').show();
   performLfmRequest('jsonitems', {show_list: show_list, sort_type: sort_type}, 'html')
     .done(function (data) {
+      selected = [];
       var response = JSON.parse(data);
-      $('#content').html(response.html);
-      $('#nav-buttons > ul').removeClass('hidden');
+      items = response.items;
+      var hasItems = response.items.length !== 0;
+      $('#empty').toggleClass('d-none', hasItems);
+      $('#content').html('').removeClass('list grid');
+      $('#editor').addClass('d-none').html('');
+
+      if (hasItems) {
+        $('#content').addClass(response.display);
+
+        items.forEach(function (item, index) {
+          items[(new Date()).getTime()] = item;
+          var template = $('#item-template').clone().removeClass('d-none').removeAttr('id');
+
+          template.children('a').attr('data-id', index);
+          if (item.thumb_url) {
+            var image = $('<div>').addClass('img-bordered').css('background-image', 'url("' + item.thumb_url + '?timestamp=' + item.time + '")')
+          } else {
+            var image = $('<i>').addClass('fa fa-5x ' + item.icon)
+          }
+          template.find('.square').append(image);
+          template.find('.item_name').text(item.name);
+          template.find('time').text((new Date(item.time)).toLocaleString());
+
+          $('#content').append(template);
+        });
+      }
+      $('#nav-buttons > ul').removeClass('d-none');
       $('#working_dir').val(response.working_dir);
       $('#current_dir').text(response.working_dir);
       console.log('Current working_dir : ' + $('#working_dir').val());
-      if (getPreviousDir() == '') {
-        $('#to-previous').addClass('hide');
-      } else {
-        $('#to-previous').removeClass('hide');
-      }
+      $('#to-previous').toggleClass('invisible', getPreviousDir() == '');
       setOpenFolders();
-    })
-    .always(function(){
-      $('#lfm-loader').hide();
+      $('#loading').addClass('d-none');
+      toggleActions();
     });
 }
 
@@ -221,51 +351,66 @@ function createFolder(folder_name) {
     .done(refreshFoldersAndItems);
 }
 
-function rename(item_name) {
+// ==================================
+// ==         File Actions         ==
+// ==================================
+
+function rename(item) {
   bootbox.prompt({
     title: lang['message-rename'],
-    value: item_name,
+    value: item.name,
     callback: function (result) {
       if (result == null) return;
       performLfmRequest('rename', {
-        file: item_name,
+        file: item.name,
         new_name: result
       }).done(refreshFoldersAndItems);
     }
   });
 }
 
-function trash(item_name) {
+function trash(item) {
   bootbox.confirm(lang['message-delete'], function (result) {
     if (result == true) {
-      performLfmRequest('delete', {items: item_name})
+      performLfmRequest('delete', {items: item.name})
         .done(refreshFoldersAndItems);
     }
   });
 }
 
-function cropImage(image_name) {
-  performLfmRequest('crop', {img: image_name})
+function crop(item) {
+  performLfmRequest('crop', {img: item.name})
     .done(hideNavAndShowEditor);
 }
 
-function resizeImage(image_name) {
-  performLfmRequest('resize', {img: image_name})
+function resize(item) {
+  performLfmRequest('resize', {img: item.name})
     .done(hideNavAndShowEditor);
 }
 
-function download(file_name) {
+function download(item) {
   var data = defaultParameters();
-  data['file'] = file_name;
+  data['file'] = item.name;
   location.href = lfm_route + '/download?' + $.param(data);
 }
 
-// ==================================
-// ==  Ckeditor, Bootbox, preview  ==
-// ==================================
+function preview(item) {
+  bootbox.dialog({
+    title: lang['title-view'],
+    message: $('<img>')
+      .addClass('img img-responsive center-block')
+      .attr('src', item.path + '?timestamp=' + item.time),
+    size: 'large',
+    onEscape: true,
+    backdrop: true
+  });
+}
 
-function useFile(file_url) {
+function move(item) {
+  notImp();
+}
 
+function use(item) {
   function getUrlParam(paramName) {
     var reParam = new RegExp('(?:[\?&]|&)' + paramName + '=([^&]+)', 'i');
     var match = window.location.search.match(reParam);
@@ -318,7 +463,7 @@ function useFile(file_url) {
     window.opener.SetUrl(p,w,h);
   }
 
-  var url = file_url;
+  var url = item.path;
   var field_name = getUrlParam('field_name');
   var is_ckeditor = getUrlParam('CKEditor');
   var is_fcke = typeof data != 'undefined' && data['Properties']['Width'] != '';
@@ -341,11 +486,15 @@ function useFile(file_url) {
       window.close();
     }
   } else {
-    // No editor found, open/download file using browser's default method
-    window.open(url);
+    // No WYSIWYG editor found, use custom method.
+    window.opener.SetUrl(url, file_path);
   }
 }
 //end useFile
+
+// ==================================
+// ==            Others            ==
+// ==================================
 
 function defaultParameters() {
   return {
@@ -360,16 +509,4 @@ function notImp() {
 
 function notify(message) {
   bootbox.alert(message);
-}
-
-function fileView(file_url, timestamp) {
-  bootbox.dialog({
-    title: lang['title-view'],
-    message: $('<img>')
-      .addClass('img img-responsive center-block')
-      .attr('src', file_url + '?timestamp=' + timestamp),
-    size: 'large',
-    onEscape: true,
-    backdrop: true
-  });
 }
