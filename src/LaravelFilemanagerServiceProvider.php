@@ -1,6 +1,6 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager;
+namespace Unisharp\Laravelfilemanager;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
