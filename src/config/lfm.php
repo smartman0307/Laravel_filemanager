@@ -19,7 +19,11 @@ return [
 
     'middlewares' => ['web', 'auth'],
 
+    // The url to this package. Change it if necessary.
     'url_prefix' => 'laravel-filemanager',
+
+    // Use relative paths (without domain)
+    'relative_paths' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -37,6 +41,11 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    // Flexible way to customize client folders accessibility
+    // If you want to customize client folders, publish tag="lfm_handler"
+    // Then you can rewrite userField function in App\Handler\ConfigHander class
+    // And set 'user_field' to App\Handler\ConfigHander::class
+    // Ex: The private folder of user will be named as the user id.
     'user_folder_name'   => Unisharp\Laravelfilemanager\Handlers\ConfigHandler::class,
 
     'shared_folder_name' => 'shares',
@@ -88,7 +97,24 @@ return [
 
     'should_validate_size'   => false,
 
+
     'should_validate_mime'   => false,
+
+    // If true, image thumbnails would be created during upload
+    'should_create_thumbnails' => true,
+
+    // Create thumbnails automatically only for listed types.
+    'raster_mimetypes' => [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png',
+    ],
+
+    // permissions to be set when create a new folder or when it creates automatically with thumbnails
+    'create_folder_mode' => 0755,
+
+    // permissions to be set on file upload.
+    'create_file_mode' => 0644,
 
     /*
     |--------------------------------------------------------------------------
