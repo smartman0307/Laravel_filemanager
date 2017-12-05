@@ -1,14 +1,10 @@
 <?php
 
-namespace Unisharp\Laravelfilemanager\controllers;
+namespace UniSharp\LaravelFilemanager\controllers;
 
-use Illuminate\Support\Facades\File;
-use Unisharp\Laravelfilemanager\Events\ImageIsDeleting;
-use Unisharp\Laravelfilemanager\Events\ImageWasDeleted;
+use UniSharp\LaravelFilemanager\Events\ImageIsDeleting;
+use UniSharp\LaravelFilemanager\Events\ImageWasDeleted;
 
-/**
- * Class CropController.
- */
 class DeleteController extends LfmController
 {
     /**
@@ -19,37 +15,32 @@ class DeleteController extends LfmController
     public function getDelete()
     {
         $name_to_delete = request('items');
+        $file_to_delete = $this->lfm->get($name_to_delete);
+        $file_path = $file_to_delete->path('absolute');
 
-        $file_to_delete = parent::getCurrentPath($name_to_delete);
-        $thumb_to_delete = parent::getThumbPath($name_to_delete);
-
-        event(new ImageIsDeleting($file_to_delete));
+        event(new ImageIsDeleting($file_path));
 
         if (is_null($name_to_delete)) {
             return parent::error('folder-name');
         }
 
-        if (! File::exists($file_to_delete)) {
-            return parent::error('folder-not-found', ['folder' => $file_to_delete]);
+        if (! $this->lfm->setName($name_to_delete)->exists()) {
+            return parent::error('folder-not-found', ['folder' => $file_path]);
         }
 
-        if (File::isDirectory($file_to_delete)) {
-            if (! parent::directoryIsEmpty($file_to_delete)) {
+        if ($this->lfm->setName($name_to_delete)->isDirectory()) {
+            if (! $this->lfm->setName($name_to_delete)->directoryIsEmpty()) {
                 return parent::error('delete-folder');
             }
-
-            File::deleteDirectory($file_to_delete);
-
-            return parent::$success_response;
+        } else {
+            if ($file_to_delete->isImage()) {
+                $this->lfm->setName($name_to_delete)->thumb()->delete();
+            }
         }
 
-        if (parent::fileIsImage($file_to_delete)) {
-            File::delete($thumb_to_delete);
-        }
+        $this->lfm->setName($name_to_delete)->delete();
 
-        File::delete($file_to_delete);
-
-        event(new ImageWasDeleted($file_to_delete));
+        event(new ImageWasDeleted($file_path));
 
         return parent::$success_response;
     }
