@@ -120,7 +120,7 @@ class LfmPath
         $lfm_path = clone $this;
         $lfm_path = $lfm_path->setName($this->helper->getNameFromPath($item_path));
 
-        return Container::getInstance()->makeWith(LfmItem::class, ['lfm' => $lfm_path, 'helper' => $this->helper]);
+        return Container::getInstance()->make(LfmItem::class, [$lfm_path, $this->helper]);
     }
 
     public function delete()
@@ -321,6 +321,6 @@ class LfmPath
             ->fit(config('lfm.thumb_img_width', 200), config('lfm.thumb_img_height', 200))
             ->encode();
 
-        $this->setName($file_name)->thumb(true)->storage->save($image_content);
+        $this->setName($file_name)->thumb(true)->storage->save((string) $image_content);
     }
 }
