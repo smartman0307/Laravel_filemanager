@@ -52,7 +52,7 @@ class LfmItemTest extends TestCase
 
         $item = new LfmItem($this->lfm_path, $this->lfm);
 
-        $this->assertEquals('foo/bar.baz', $item->path());
+        $this->assertEquals('foo/bar.baz', $item->absolutePath());
     }
 
     public function testIsDirectory()

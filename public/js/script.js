@@ -254,9 +254,6 @@ function performLfmRequest(url, parameter, type) {
 
   return $.ajax({
     type: 'GET',
-    beforeSend: function(request) {
-      request.setRequestHeader("Authorization", 'Bearer ' + getUrlParam('token'));
-    },
     dataType: type || 'text',
     url: lfm_route + '/' + url,
     data: data,
@@ -320,7 +317,7 @@ function loadItems() {
 
           template.find('.square').append(image);
           template.find('.item_name').text(item.name);
-          template.find('time').text((new Date(item.time * 1000)).toLocaleString());
+          template.find('time').text((new Date(item.time)).toLocaleString());
 
           $('#content').append(template);
         });
@@ -442,13 +439,13 @@ function move(item) {
   notImp();
 }
 
-function getUrlParam(paramName) {
-  var reParam = new RegExp('(?:[\?&]|&)' + paramName + '=([^&]+)', 'i');
-  var match = window.location.search.match(reParam);
-  return ( match && match.length > 1 ) ? match[1] : null;
-}
+function use(item) {
+  function getUrlParam(paramName) {
+    var reParam = new RegExp('(?:[\?&]|&)' + paramName + '=([^&]+)', 'i');
+    var match = window.location.search.match(reParam);
+    return ( match && match.length > 1 ) ? match[1] : null;
+  }
 
-function use(items) {
   function useTinymce3(url) {
     var win = tinyMCEPopup.getWindowArg("window");
     win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = url;
@@ -495,7 +492,7 @@ function use(items) {
     window.opener.SetUrl(p,w,h);
   }
 
-  var url = items[0].url;
+  var url = item.url;
   var field_name = getUrlParam('field_name');
   var is_ckeditor = getUrlParam('CKEditor');
   var is_fcke = typeof data != 'undefined' && data['Properties']['Width'] != '';

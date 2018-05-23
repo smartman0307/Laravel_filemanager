@@ -268,9 +268,6 @@
           }
         });
       },
-      headers: {
-        'Authorization': 'Bearer {{ request('token') }}'
-      },
       acceptedFiles: "{{ implode(',', $helper->availableMimeTypes()) }}",
       maxFilesize: ({{ $helper->maxUploadSize() }} / 1000)
     }
