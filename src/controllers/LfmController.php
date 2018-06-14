@@ -1,6 +1,6 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\controllers;
+namespace UniSharp\LaravelFilemanager\Controllers;
 
 use UniSharp\LaravelFilemanager\Lfm;
 use UniSharp\LaravelFilemanager\LfmPath;

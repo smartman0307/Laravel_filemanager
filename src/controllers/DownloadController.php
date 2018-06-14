@@ -1,6 +1,6 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\controllers;
+namespace UniSharp\LaravelFilemanager\Controllers;
 
 class DownloadController extends LfmController
 {

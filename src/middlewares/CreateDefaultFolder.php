@@ -1,6 +1,6 @@
 <?php
 
-namespace UniSharp\LaravelFilemanager\middlewares;
+namespace UniSharp\LaravelFilemanager\Middlewares;
 
 use Closure;
 use UniSharp\LaravelFilemanager\Lfm;
